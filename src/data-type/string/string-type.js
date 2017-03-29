@@ -33,11 +33,46 @@ class StringType extends OTType {
 
 
   serializeObject(op) {
+    const result = [];
+    OperationSequence.asArray(op)
+            .forEach((subOp) => {
+              if (subOp instanceof ops.Retain) {
+                result.push(['retain', subOp.length]);
+              } else if (subOp instanceof ops.Insert) {
+                result.push(['insert', subOp.value]);
+              } else if (subOp instanceof ops.Delete) {
+                result.push(['delete', subOp.value]);
+              } else {
+                throw new Error(`Unsupported operation: ${subOp}`);
+              }
+            });
 
+    return result;
   }
 
   deserializeObject(json) {
-    ;
+    if (!Array.isArray(json)) {
+      throw new Error(`Given input is not an array, got: ${json}`);
+    }
+
+    const delta = new StringDelta();
+    json.forEach((op) => {
+      switch (op[0]) {
+        case 'retain':
+          delta.retain(op[1]);
+          break;
+        case 'insert':
+          delta.insert(op[1]);
+          break;
+        case 'delete':
+          delta.delete(op[1]);
+          break;
+        default:
+          throw new Error(`Unknown operation: ${op}`);
+      }
+    });
+
+    return delta.done();
   }
 }
 
