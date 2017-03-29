@@ -15,7 +15,52 @@ class MapType extends OTType {
   }
 
   transform(left, right) {
+    const it1 = new OperationIterator(left, keyComparator);
+    const it2 = new OperationIterator(right, keyComparator);
 
+    const deltaLeft = [];
+    const deltaRight = [];
+
+    while (it1.hasNext) {
+      const op1 = it1.next();
+
+      let handled = false;
+
+      while (it2.hasNext) {
+        const op2 = it2.next();
+
+        const compared = keyComparator(op1, op2);
+        if (compared > 0) {
+          deltaRight.push(op2);
+          continue;
+        } else if (compared < 0) {
+          it2.back();
+        } else {
+          if (op1 instanceof ops.Set && op2 instanceof ops.Set) {
+            deltaRight.push(new ops.Set(op1.key, op1.newValue, op2.newValue));
+          }
+
+          handled = true;
+        }
+
+        break;
+      }
+
+      if (!handled) {
+        deltaLeft.push(op1);
+      }
+    }
+
+    while (it2.hasNext) {
+      deltaRight.push(it2.next());
+    }
+
+    deltaLeft.sort(keyComparator);
+    deltaRight.sort(keyComparator);
+    return {
+      left: new OperationSequence(deltaLeft),
+      right: new OperationSequence(deltaRight)
+    };
   }
 
   serializeObject(op) {
