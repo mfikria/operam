@@ -28,9 +28,145 @@ class StringType extends OTType {
   }
 
   transform(left, right) {
+    left = new OperationIterator(left);
+    right = new OperationIterator(right);
 
+    const deltaLeft = new StringDelta();
+    const deltaRight = new StringDelta();
+
+    function handleRetain(op1, op2) {
+      const length1 = op1.length;
+
+      if (op2 instanceof ops.Retain) {
+        const length2 = op2.length;
+
+        if (length1 > length2) {
+          deltaLeft.retain(length2);
+          deltaRight.retain(length2);
+
+          left.replace(new ops.Retain(length1 - length2));
+        } else if (length1 < length2) {
+          deltaLeft.retain(length1);
+          deltaRight.retain(length1);
+
+          right.replace(new ops.Retain(length2 - length1));
+        } else {
+          deltaLeft.retain(length1);
+          deltaRight.retain(length2);
+        }
+      } else if (op2 instanceof ops.Insert) {
+        const value2 = op2.value;
+        const length2 = value2.length;
+
+        deltaLeft.retain(length2);
+        deltaRight.insert(value2);
+
+        left.back();
+      } else if (op2 instanceof ops.Delete) {
+        const value2 = op2.value;
+        const length2 = value2.length;
+
+        if (length1 > length2) {
+          deltaRight.delete(value2);
+
+          left.replace(new ops.Retain(length1 - length2));
+        } else if (length1 < length2) {
+          deltaRight.delete(value2.substring(0, length1));
+
+          right.replace(new ops.Delete(value2.substring(length1)));
+        } else {
+          deltaRight.delete(value2);
+        }
+      }
     }
 
+    function handleInsert(op1, op2) {
+      const value1 = op1.value;
+      const length1 = op1.value.length;
+      deltaLeft.insert(value1);
+      deltaRight.retain(length1);
+      right.back();
+    }
+
+    function handleDelete(op1, op2) {
+      const value1 = op1.value;
+      const length1 = value1.length;
+
+      if (op2 instanceof ops.Retain) {
+        const length2 = op2.length;
+        if (length1 > length2) {
+          deltaLeft.delete(value1.substring(0, length2));
+
+          left.replace(new ops.Delete(value1.substring(length2)));
+        } else if (length1 < length2) {
+          deltaLeft.delete(value1);
+
+          right.replace(new ops.Retain(length2 - length1));
+        } else {
+          deltaLeft.delete(value1);
+        }
+      } else if (op2 instanceof ops.Insert) {
+        const value2 = op2.value;
+        const length2 = value2.length;
+
+        deltaLeft.retain(length2);
+        deltaRight.insert(value2);
+
+        left.back();
+      } else if (op2 instanceof ops.Delete) {
+        const value2 = op2.value;
+        const length2 = value2.length;
+
+        if (length1 > length2) {
+          left.replace(new ops.Delete(value1.substring(length2)));
+        } else if (length1 < length2) {
+          right.replace(new ops.Delete(value2.substring(length1)));
+        } else {
+        }
+      }
+    }
+
+    while (left.hasNext) {
+      const op1 = left.next();
+
+      if (right.hasNext) {
+        const op2 = right.next();
+
+        if (op1 instanceof ops.Retain) {
+          handleRetain(op1, op2);
+        } else if (op1 instanceof ops.Insert) {
+          handleInsert(op1, op2);
+        } else if (op1 instanceof ops.Delete) {
+          handleDelete(op1, op2);
+        } else if (op1 instanceof ops.AnnotationUpdate) {
+          handleAnnotationUpdate(op1, op2);
+        }
+      } else if (op1 instanceof ops.Insert) {
+        const value1 = op1.value;
+        deltaLeft.insert(value1);
+        deltaRight.retain(value1.length);
+      } else {
+        throw new Error(`Transformation failure, mismatch in operation. Current left operation: ${op1.toString()}`);
+      }
+    }
+
+    while (right.hasNext) {
+      const op2 = right.next();
+      if (op2 instanceof ops.Insert) {
+        const value2 = op2.value;
+
+        deltaRight.insert(value2);
+        deltaLeft.retain(value2.length);
+      } else {
+        throw new Error(`Transformation failure, mismatch in operation. Current right operation: ${op2.toString()}`);
+      }
+    }
+
+    return {
+      left: deltaLeft.done(),
+      right: deltaRight.done()
+    };
+  }
 
   serializeObject(op) {
     const result = [];
