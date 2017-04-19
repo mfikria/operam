@@ -13,18 +13,117 @@ class StringType extends OTType {
     const delta = new StringDelta();
 
     function handleRetain(op1, op2) {
+      const length1 = op1.length;
 
+      if (op2 instanceof ops.Retain) {
+        const length2 = op2.length;
+
+        if (length1 < length2) {
+          delta.retain(length1);
+
+          right.replace(new ops.Retain(length2 - length1));
+        } else if (length1 > length2) {
+          delta.retain(length2);
+
+          left.replace(new ops.Retain(length1 - length2));
+        } else {
+          delta.retain(length1);
+        }
+      } else if (op2 instanceof ops.Insert) {
+        delta.insert(op2.value);
+
+        left.back();
+      } else if (op2 instanceof ops.Delete) {
+        const value2 = op2.value;
+        const length2 = value2.length;
+
+                // delta.delete(value2);
+
+        if (length1 < length2) {
+          delta.delete(value2.substring(0, length1));
+          right.replace(new ops.Delete(value2.substring(length1)));
+        } else if (length1 > length2) {
+          delta.delete(value2);
+          left.replace(new ops.Retain(length1 - length2));
+        } else {
+          delta.delete(value2);
+        }
+      }
     }
 
     function handleInsert(op1, op2) {
+      const value1 = op1.value;
+      const length1 = op1.value.length;
 
+      if (op2 instanceof ops.Retain) {
+        const length2 = op2.length;
+
+        if (length1 < length2) {
+          delta.insert(value1);
+          right.replace(new ops.Retain(length2 - length1));
+        } else if (length1 > length2) {
+          delta.insert(value1.substring(0, length2));
+
+          left.replace(new ops.Insert(value1.substring(length2)));
+        } else {
+          delta.insert(value1);
+        }
+      } else if (op2 instanceof ops.Insert) {
+        delta.insert(op2.value);
+        left.back();
+      } else if (op2 instanceof ops.Delete) {
+        const value2 = op2.value;
+        const length2 = value2.length;
+
+        if (length1 > length2) {
+          left.replace(new ops.Insert(value1.substring(length2)));
+        } else if (length1 < length2) {
+          right.replace(new ops.Delete(value2.substring(length1)));
+        } else {
+        }
+      }
     }
 
     function handleDelete(op1, op2) {
+      const value1 = op1.value;
+      const length1 = value1.length;
 
+      if (op2 instanceof ops.Retain) {
+        delta.delete(value1);
+
+        right.back();
+      } else if (op2 instanceof ops.Insert) {
+        delta.delete(value1);
+        delta.insert(op2.value);
+      } else if (op2 instanceof ops.Delete) {
+        delta.delete(value1);
+        right.back();
+      }
     }
 
+    while (left.hasNext && right.hasNext) {
+      const op1 = left.next();
+      const op2 = right.next();
 
+      if (op1 instanceof ops.Retain) {
+        handleRetain(op1, op2);
+      } else if (op1 instanceof ops.Insert) {
+        handleInsert(op1, op2);
+      } else if (op1 instanceof ops.Delete) {
+        handleDelete(op1, op2);
+      }
+    }
+
+    if (left.hasNext) {
+      throw new Error('Composition failure');
+    }
+
+    while (right.hasNext) {
+      const op2 = right.next();
+      op2.apply(delta);
+    }
+
+    return delta.done();
   }
 
   transform(left, right) {
