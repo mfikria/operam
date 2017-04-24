@@ -9,9 +9,47 @@ function keyComparator(a, b) {
 }
 
 class MapType extends OTType {
-
   compose(left, right) {
+    const it1 = new OperationIterator(left, keyComparator);
+    const it2 = new OperationIterator(right, keyComparator);
 
+    const result = [];
+
+    while (it1.hasNext) {
+      const op1 = it1.next();
+
+      let handled = false;
+
+      while (it2.hasNext) {
+        const op2 = it2.next();
+
+        const compared = keyComparator(op1, op2);
+        if (compared > 0) {
+          result.push(op2);
+          continue;
+        } else if (compared < 0) {
+          it2.back();
+        } else {
+          if (op1 instanceof ops.Set && op2 instanceof ops.Set) {
+            it1.replace(new ops.Set(op1.key, op1.oldValue, op2.newValue));
+          }
+
+          handled = true;
+        }
+        break;
+      }
+
+      if (!handled) {
+        result.push(op1);
+      }
+    }
+
+    while (it2.hasNext) {
+      result.push(it2.next());
+    }
+
+    result.sort(keyComparator);
+    return new OperationSequence(result);
   }
 
   transform(left, right) {
