@@ -1,5 +1,3 @@
-
-
 const OperationComposer = require('../helper/operation-composer');
 
 class OTType {
