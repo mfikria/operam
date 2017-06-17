@@ -1,0 +1,85 @@
+[
+  {
+    "keyword": "Feature",
+    "line": 1,
+    "name": "End to end tests",
+    "tags": [],
+    "uri": "/usr/src/operam-test/features/EndtoEnd.feature",
+    "elements": [
+      {
+        "keyword": "Scenario",
+        "line": 2,
+        "name": "Check the information links",
+        "tags": [],
+        "operationId": "end-to-end-tests;check-the-information-links",
+        "steps": [
+          {
+            "arguments": [],
+            "keyword": "Before",
+            "result": {
+              "status": "passed",
+              "duration": 31862
+            },
+            "hidden": true,
+            "match": {
+              "location": "/usr/src/operam-test/features/step_definitions/step.js:10"
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "name": "user is in home page",
+            "result": {
+              "status": "passed",
+              "duration": 5
+            },
+            "line": 3,
+            "match": {
+              "location": "/usr/src/operam-test/features/step_definitions/step.js:14"
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "name": "he goes to information link \"Sitemap\"",
+            "result": {
+              "status": "passed",
+              "duration": 3
+            },
+            "line": 4,
+            "match": {
+              "location": "/usr/src/operam-test/features/step_definitions/step.js:18"
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "name": "he should see the heading \"Sitemap\"",
+            "result": {
+              "status": "passed",
+              "duration": 2
+            },
+            "line": 5,
+            "match": {
+              "location": "/usr/src/operam-test/features/step_definitions/step.js:21"
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "After",
+            "result": {
+              "status": "failed",
+              "duration": 1797,
+              "error_message": "Testing if element <body> contains text: \"Welcome to our store\". - Expected \"Welcome to our store\" but got: \"NOPCOMMERCE DAYS 2017\n16 - 17 November, New York\nEARLY-BIRD REGISTRATION IS OPEN!\nFIND OUT MORE\nOPEN-SOURCE & FREE\nECOMMERCE SOLUTION\nDOWNLOAD FOR FREE VIEW LIVE DEMO\nnopCommerce is a universal eCommerce platform fitting every merchant’s needs: it powers both corporate and small business sites all over the world, companies selling physical and digital goods. nopCommerce is a transparent and well-structured solution, it combines best features of open-source and commercial software.\nThe platform has everything you need to get started and grow your eCommerce business.\nTrusted by over 27,000 store owners.\nDownloaded more than 1,800,000 times\nnopCommerce Features\nMobile friendly\nWe are living in the mobile age. An online store interface must be viewable and convenient on any device and in any resolution. nopCommerce offers clear and up-to-date responsive design of both frontend and admin area. Manage your store, and allow your customers to buy your goods on the go.\nProduct details\nWe offer a wide range of editable and tweakable product details unique for various businesses, such as SKU, quantity, size, price, weight, image, and stock level.\nCheckout\nEasy and flexible checkout is crucial for a good store. nopCommerce provides a variety of checkout options: one-page checkout, anonymous checkout, addition of checkout attributes, and more.\nMarketing\nDiscount codes, gift certificates, product rating and reviews are the must-have options for a successful online store. nopCommerce offers an arsenal of marketing tools for statistics automation and content marketing. All pages created with nopCommerce are adaptable to major product comparison feeds such as Google Shopping, PriceGrabber, Yahoo Shopping and become.com.\nMulti-vendor and multi-store support\nWith nopCommerce, you can operate a multi-vendor marketplace and easily re-sell items supplied by other vendors. Your vendors can enjoy a dedicated admin panel not interfering with each other. Multi-store support allows you to operate two and more online stores with different URLs using one administration panel.\nVIEW ALL FEATURES\nThese companies rely on nopCommerce\nVIEW OTHER CLIENTS\nInformation\nFeatures\nStore demo\nShowcase\nDownload nopCommerce\nMarketplace\nFollow us\nFacebook\nTwitter\nGoogle+\nYoutube\nLinkedIn\nSupport\nDocumentation\nCommunity forums\nPremium support\nSolution partners\nBecome a partner\nCopyright © 2008-2017 nopCommerce. All rights reserved. Privacy policy\nRecommended Hosting\"\n    at World.<anonymous> (/usr/src/operam-test/features/step_definitions/step.js:15:23)"
+            },
+            "hidden": true,
+            "match": {
+              "location": "/usr/src/operam-test/features/step_definitions/step.js:6"
+            }
+          }
+        ]
+      }
+    ],
+    "operationId": "end-to-end-tests"
+  }
+]

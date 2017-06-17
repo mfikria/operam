@@ -1,0 +1,10 @@
+version: '2'
+services:
+  web:
+    build: .
+    command: node ./demo/server.js
+    volumes:
+      - .:/usr/src/operam-test
+      - /usr/src/operam-test/node_modules
+    ports:
+      - "4444:4444"
