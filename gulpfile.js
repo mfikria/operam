@@ -4,7 +4,7 @@ const gulp = require('gulp');
 gulp.task('build', () =>
     gulp.src('index.js')
         .pipe(webpack({
-          entry: './demo/client.js',
+          entry: './client.js',
           output: {
             library: 'operam',
             filename: 'operam.js'
@@ -27,5 +27,5 @@ gulp.task('build', () =>
             ]
           }
         }))
-        .pipe(gulp.dest('demo'))
+        .pipe(gulp.dest('build'))
 );

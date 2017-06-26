@@ -40,5 +40,5 @@ jspm_packages
 # idea
 .idea
 
-demo/operam.js
+build/operam.js
 2
