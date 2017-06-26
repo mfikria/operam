@@ -1,6 +1,6 @@
 const OTOperation = require('../ot-operation');
 
-class Set extends OTOperation{
+class Set extends OTOperation {
   constructor(key, oldValue, newValue) {
     super();
     this.key = key;

@@ -11,3 +11,5 @@ class OTOperation {
     throw new Error('Not implemented');
   }
 }
+
+module.exports = OTOperation;

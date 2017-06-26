@@ -39,8 +39,6 @@ class StringDelta {
           this.ops.push(new ops.Delete(this.value));
         }
         break;
-      default:
-        throw new Error('Operation is not defined');
     }
 
     this.retainCount = 0;
