@@ -13,6 +13,7 @@ class SocketConnector extends AbstractConnector {
       this.onDocumentChange();
       this.onDocumentLoad(resolve);
       this.emitDocumentLoad();
+      this.onDocumentDisconnect();
     });
   }
 
@@ -45,6 +46,12 @@ class SocketConnector extends AbstractConnector {
     });
   }
 
+  onDocumentDisconnect() {
+    this.socket.on('disconnect', () => {
+      console.log('test debug');
+    });
+  }
+
   emitDocumentLoad() {
     this.socket.emit(Event.LOAD_DOCUMENT, {
       documentId: this.documentId
@@ -66,6 +73,7 @@ class SocketConnector extends AbstractConnector {
       documentId: this.documentId
     });
   }
+
 }
 
 module.exports = SocketConnector;
