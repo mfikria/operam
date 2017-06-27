@@ -1,3 +1,7 @@
+if (typeof (PhusionPassenger) !== 'undefined') {
+  PhusionPassenger.configure({ autoInstall: false });
+}
+
 const port = 3000;
 
 const express = require('express');
@@ -19,7 +23,7 @@ app.get('/operam.js', (req, res) => {
 });
 
 app.get('*', (req, res) => {
-  res.sendFile('public/' + req.path, path);
+  res.sendFile(`public/${req.path}`, path);
 });
 
 // Demo flowchart diagram
@@ -27,8 +31,12 @@ app.get('/flowchart-diagram', (req, res) => {
   res.sendFile('public/flowchart-diagram/index.html', path);
 });
 
-http.listen(port, () => {
-  console.log('Connect your client to http://localhost:7000/');
-});
+if (typeof (PhusionPassenger) !== 'undefined') {
+  http.listen('passenger');
+} else {
+  http.listen(port, () => {
+    console.log('Connect your client to http://localhost:7000/');
+  });
+}
 
 const server = new CentralServer(io);
