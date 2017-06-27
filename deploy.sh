@@ -27,3 +27,7 @@ sudo yum install -y nginx passenger || sudo yum-config-manager --enable cr && su
 
 passenger-config --root
 passenger-config validate-install
+
+npm install gulp-cli -g
+npm install nightwatch -g
+npm link nightwatch
