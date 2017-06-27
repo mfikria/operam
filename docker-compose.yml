@@ -2,9 +2,9 @@ version: '2'
 services:
   web:
     build: .
-    command: node ./demo/server.js
+    command: node ./server.js
     volumes:
       - .:/usr/src/operam
       - /usr/src/operam/node_modules
     ports:
-      - "7000:7000"
+      - "3000:3000"

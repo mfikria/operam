@@ -1,4 +1,4 @@
-const port = 7000;
+const port = 3000;
 
 const express = require('express');
 
@@ -19,7 +19,7 @@ app.get('/operam.js', (req, res) => {
 });
 
 app.get('*', (req, res) => {
-  res.sendFile(req.path, path);
+  res.sendFile('public/' + req.path, path);
 });
 
 // Demo flowchart diagram
