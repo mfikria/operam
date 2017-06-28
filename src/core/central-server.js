@@ -1,4 +1,5 @@
 const WorkspaceManager = require('./workspace-manager');
+const OperationManager = require('./operation-manager');
 const HistoryBuffer = require('./history-buffer');
 const Event = require('../helper/events');
 
@@ -32,7 +33,7 @@ class CentralServer {
       documentId: operationId,
       historyId: operationWrapper.historyId,
       operationId: operationWrapper.operationId,
-      operation: workspaceManager.operationManager.serializeObject(operationWrapper.operation)
+      operation: OperationManager.serializeObject(operationWrapper.operation)
     };
   }
 
@@ -65,7 +66,7 @@ class CentralServer {
             .store(
                 data.historyId,
                 data.operationId,
-                workspaceManager.operationManager.deserializeObject(data.operation)
+                OperationManager.deserializeObject(data.operation)
             )
             .then((op) => {
               this.io.in(data.documentId).emit(

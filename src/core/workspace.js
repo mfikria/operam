@@ -1,4 +1,5 @@
 const EventEmitter = require('events');
+const OperationManager = require('./operation-manager');
 
 const SYNCHRONIZED = 0;
 const AWAITING_CONFIRM = 1;
@@ -6,7 +7,7 @@ const AWAITING_CONFIRM_WITH_BUFFER = 2;
 
 class Workspace {
   constructor(sync) {
-    this.dataType = sync.dataType;
+    this.operationManager = new OperationManager();
     this.sync = sync;
 
     this.lastId = 0;
@@ -66,7 +67,7 @@ class Workspace {
           this.parentHistoryId = op.historyId;
           this.state = SYNCHRONIZED;
         } else {
-          const transformed = this.dataType.transform(
+          const transformed = this.operationManager.transform(
                         op.operation,
                         this.lastSent.operation,
                     );
@@ -94,7 +95,7 @@ class Workspace {
           };
           this.sync.emitDocumentChange(this.lastSent);
         } else {
-          let transformed = this.dataType.transform(
+          let transformed = this.operationManager.transform(
                         op.operation,
                         this.lastSent.operation,
                     );
@@ -107,7 +108,7 @@ class Workspace {
           };
 
 
-          transformed = this.dataType.transform(
+          transformed = this.operationManager.transform(
                         this.buffer.operation,
                         transformed.left,
                     );
@@ -134,7 +135,7 @@ class Workspace {
 
     if (this.composeDepth > 0) {
       if (this.composing) {
-        this.composing = this.dataType.compose(this.composing, op);
+        this.composing = this.operationManager.compose(this.composing, op);
       } else {
         this.composing = op;
       }
@@ -142,7 +143,7 @@ class Workspace {
       return;
     }
 
-    this.current = this.dataType.compose(this.current, op);
+    this.current = this.operationManager.compose(this.current, op);
 
     let tagged;
     switch (this.state) {
@@ -171,7 +172,7 @@ class Workspace {
         break;
       case AWAITING_CONFIRM_WITH_BUFFER:
 
-        this.buffer.operation = this.dataType.compose(this.buffer.operation, op);
+        this.buffer.operation = this.operationManager.compose(this.buffer.operation, op);
         break;
       default:
         throw new Error(`Unknown state: ${this.state}`);
@@ -184,7 +185,7 @@ class Workspace {
   }
 
   composeAndTriggerListeners(op) {
-    this.current = this.dataType.compose(this.current, op);
+    this.current = this.operationManager.compose(this.current, op);
     this.events.emit('change', {
       operation: op,
       local: false

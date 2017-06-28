@@ -1,9 +1,8 @@
 const EventEmitter = require('events');
 
 class AbstractConnector {
-  constructor(dataType, documentId) {
+  constructor(documentId) {
     this.events = new EventEmitter();
-    this.dataType = dataType;
     this.documentId = documentId;
   }
 

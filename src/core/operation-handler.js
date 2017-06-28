@@ -8,7 +8,7 @@ class OperationHandler {
 
   update(id, type, operation) {
     if (this.ops[id]) {
-      throw `Can not update id \`${id}\``;
+      throw new Error(`Can not update id \`${id}\``);
     }
 
     this.ops[id] = new ops.OperationWrapper(id, type, operation);

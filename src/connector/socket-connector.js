@@ -1,10 +1,11 @@
 const AbstractConnector = require('./abstract-connector');
 const OperationBundle = require('../helper/operation-bundle');
+const OperationManager = require('../core/operation-manager');
 const Event = require('../helper/events');
 
 class SocketConnector extends AbstractConnector {
-  constructor(dataType, socket, documentId) {
-    super(dataType, documentId);
+  constructor(socket, documentId) {
+    super(documentId);
     this.socket = socket;
   }
 
@@ -13,7 +14,7 @@ class SocketConnector extends AbstractConnector {
       this.onDocumentChange();
       this.onDocumentLoad(resolve);
       this.emitDocumentLoad();
-      this.onDocumentDisconnect();
+      this.onConnectError();
     });
   }
 
@@ -23,7 +24,7 @@ class SocketConnector extends AbstractConnector {
       const operationBundle = new OperationBundle(
                 data.historyId,
                 data.operationId,
-                this.dataType.deserializeObject(data.operation),
+                OperationManager.deserializeObject(data.operation),
             );
 
       if (data.documentId === this.documentId) {
@@ -37,7 +38,7 @@ class SocketConnector extends AbstractConnector {
       const operationBundle = new OperationBundle(
                 data.historyId,
                 data.operationId,
-                this.dataType.deserializeObject(data.operation),
+                OperationManager.deserializeObject(data.operation),
             );
 
       if (data.documentId === this.documentId) {
@@ -46,7 +47,7 @@ class SocketConnector extends AbstractConnector {
     });
   }
 
-  onDocumentDisconnect() {
+  onConnectError() {
     this.socket.on('disconnect', () => {
       console.log('test debug');
     });
@@ -64,7 +65,7 @@ class SocketConnector extends AbstractConnector {
       documentId: this.documentId,
       historyId: op.historyId,
       operationId: op.operationId,
-      operation: this.dataType.serializeObject(op.operation)
+      operation: OperationManager.serializeObject(op.operation)
     });
   }
 

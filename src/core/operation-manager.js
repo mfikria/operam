@@ -13,28 +13,6 @@ function idComparator(a, b) {
 }
 
 class OperationManager extends OTType {
-  constructor() {
-    super();
-
-    this.dataTypes = {
-      map: map.newType(),
-      string: string.newType()
-    };
-  }
-
-  addType(id, type) {
-    if (type.newType) {
-      type = type.newType();
-    }
-
-    if (!type.transform || !type.compose) {
-      throw 'Invalid type. Types must have a compose and transform function';
-    }
-
-    this.dataTypes[id] = type;
-    return this;
-  }
-
   compose(left, right) {
     const it1 = new OperationIterator(left, idComparator);
     const it2 = new OperationIterator(right, idComparator);
@@ -63,7 +41,7 @@ class OperationManager extends OTType {
                                 op2.dataType}`);
             }
 
-            const type = this.dataTypes[op1.dataType];
+            const type = OperationManager.DATA_TYPES[op1.dataType];
             if (!type) {
               throw `Can not compose, unknown type: ${op1.dataType}`;
             }
@@ -119,7 +97,7 @@ class OperationManager extends OTType {
                                 op2.dataType}`;
             }
 
-            const type = this.dataTypes[op1.dataType];
+            const type = OperationManager.DATA_TYPES[op1.dataType];
             if (!type) {
               throw `Can not compose, unknown type: ${op1.dataType}`;
             }
@@ -152,7 +130,7 @@ class OperationManager extends OTType {
     };
   }
 
-  serializeObject(op) {
+  static serializeObject(op) {
     const result = [];
     OperationSequence.asArray(op)
             .forEach((subOp) => {
@@ -162,7 +140,7 @@ class OperationManager extends OTType {
                   subOp.operationId,
                   subOp.dataType,
 
-                  this.dataTypes[subOp.dataType].serializeObject(subOp.operation)
+                  OperationManager.DATA_TYPES[subOp.dataType].serializeObject(subOp.operation)
                 ]);
               } else {
                 throw new Error(`Unsupported operation: ${subOp}`);
@@ -172,13 +150,13 @@ class OperationManager extends OTType {
     return result;
   }
 
-  deserializeObject(json) {
+  static deserializeObject(json) {
     const delta = new CombinedDelta();
 
     json.forEach((data) => {
       switch (data[0]) {
         case 'update':
-          delta.update(data[1], data[2], this.dataTypes[data[2]].deserializeObject(data[3]));
+          delta.update(data[1], data[2], OperationManager.DATA_TYPES[data[2]].deserializeObject(data[3]));
           break;
         default:
           throw new Error(`Unsupported type of operation: ${data[0]}`);
@@ -192,5 +170,10 @@ class OperationManager extends OTType {
     return new CombinedDelta();
   }
 }
+
+OperationManager.DATA_TYPES = {
+  map: map.newType(),
+  string: string.newType()
+};
 
 module.exports = OperationManager;

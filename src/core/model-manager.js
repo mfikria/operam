@@ -7,9 +7,9 @@ const OperationHandler = require('./operation-handler');
 const OperationManager = require('./operation-manager');
 
 class Model {
-  constructor(editor) {
-    this.workspace = editor;
-    this.dataType = editor.dataType;
+  constructor(workspace) {
+    this.workspace = workspace;
+    this.operationManager = new OperationManager();
 
     this.lastObjectId = 0;
 
@@ -23,7 +23,7 @@ class Model {
 
     this.operationHandler = new OperationHandler();
 
-    editor.on('change', (change) => {
+    workspace.on('change', (change) => {
       if (!change.local) {
         change.operation.apply(this.changeHandler);
       }
@@ -35,7 +35,7 @@ class Model {
       update: (id, type, change) => {
         if (typeof this.values[id] !== 'undefined') {
           const current = this.values[id];
-          const composed = this.dataType.dataTypes[type].compose(current, change);
+          const composed = OperationManager.DATA_TYPES[type].compose(current, change);
 
           this.values[id] = composed;
 
@@ -101,7 +101,7 @@ class Model {
   apply(id, type, op) {
     if (typeof this.values[id] !== 'undefined') {
       const current = this.values[id];
-      const composed = this.dataType.dataTypes[type].compose(current, op);
+      const composed = OperationManager.DATA_TYPES[type].compose(current, op);
 
       this.values[id] = composed;
     } else {

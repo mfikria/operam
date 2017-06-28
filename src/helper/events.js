@@ -17,3 +17,5 @@ exports.DELETE = 'delete';
 exports.LOAD_DOCUMENT = 'load document';
 exports.CHANGE_DOCUMENT = 'change document';
 exports.CLOSE_DOCUMENT = 'close document';
+
+exports.TEST_CONNECT_ERROR = 'test connect_error';
