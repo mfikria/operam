@@ -3,7 +3,9 @@ class Event {
     this.remote = remote;
     this.local = !remote;
 
-    Object.keys(data).forEach(k => this[k] = data[k]);
+    Object.keys(data).forEach((key) => {
+      this[key] = data[key];
+    });
   }
 }
 
@@ -18,4 +20,5 @@ exports.LOAD_DOCUMENT = 'load document';
 exports.CHANGE_DOCUMENT = 'change document';
 exports.CLOSE_DOCUMENT = 'close document';
 
-exports.TEST_CONNECT_ERROR = 'test connect_error';
+exports.CONNECT_ERROR = 'connect_error';
+exports.RECONNECT = 'reconnect';

@@ -1,46 +1,39 @@
-
-
 const OperationSequence = require('./operation-sequence');
 
 class OperationIterator {
   constructor(op, comparator) {
-    const ops = OperationSequence.asArray(op);
-    if (comparator) {
-      ops.sort(comparator);
-    }
-
     this.index = 0;
-    this.ops = ops;
+    this.ops = OperationSequence.asArray(op);
+    if (comparator) {
+      this.ops.sort(comparator);
+    }
   }
 
-  get hasNext() {
+  hasNext() {
     return this.index < this.ops.length;
   }
 
   next() {
-    if (this.index >= this.ops.length) {
-      throw 'No more operations available';
+    if (!this.hasNext()) {
+      throw new Error('No more operations available');
     }
-
     const result = this.ops[this.index];
-    this.index++;
+    this.index += 1;
     return result;
   }
 
   back() {
-    if (this.index === 0) {
-      throw 'Can not go back, iteration not started';
+    if (this.index <= 0) {
+      throw new Error('Cannot go back, no more operations available');
     }
-
-    this.index--;
+    this.index -= 1;
   }
 
   replace(op) {
-    if (this.index === 0) {
-      throw 'Can not replace, iteration not started';
+    if (this.index <= 0) {
+      throw new Error('Cannot replace, no more operations available');
     }
-
-    this.index--;
+    this.index -= 1;
     this.ops[this.index] = op;
   }
 }

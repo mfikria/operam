@@ -1,22 +1,18 @@
-
-
 class OperationComposer {
-  constructor(type) {
-    this.dataType = type;
+  constructor(dataType) {
+    this.dataType = dataType;
   }
 
   add(op) {
-    if (this.result) {
-      this.result = this.dataType.compose(this.result, op);
-    } else {
-      this.result = op;
-    }
+    this.composed = this.composed ?
+        this.dataType.compose(this.composed, op) :
+        op;
 
     return this;
   }
 
   done() {
-    return this.result;
+    return this.composed;
   }
 }
 

@@ -1,16 +1,6 @@
-
-
 class OperationSequence {
   constructor(ops) {
     this.ops = ops;
-  }
-
-  get operations() {
-    return this.ops;
-  }
-
-  set operations(ops) {
-    throw 'Can not set operations';
   }
 
   apply(handler) {
@@ -19,11 +9,11 @@ class OperationSequence {
 
   static asArray(op) {
     if (op instanceof OperationSequence) {
-      return op.operations.slice(0);
+      return [...op.ops];
     } else if (op && op.apply) {
       return [op];
     }
-    throw new Error(`No valid operation specified: ${op}`);
+    throw new Error(`Operation is invalid: ${op}`);
   }
 
   toString() {
