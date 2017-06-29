@@ -6,15 +6,15 @@ exports.datatype = {
 };
 
 exports.core = {
-    Workspace: require('./src/core/workspace'),
-    WorkspaceManager: require('./src/core/workspace-manager'),
+    Document: require('./src/core/document'),
+    DocumentManager: require('./src/core/document-manager'),
     OperationBundle: require('./src/helper/operation-bundle')
 };
 
 exports.connection = {
-    AbstractConnector: require('./src/connector/abstract-connector'),
+    OTConnector: require('./src/connector/ot-connector'),
     SocketConnector: require('./src/connector/socket-connector')
 };
 
-exports.ModelManager = require('./src/core/model-manager');
+exports.OTEngine = require('./src/core/ot-engine');
 exports.TextareaBinder = require('./src/data-binding/textarea-binding');
