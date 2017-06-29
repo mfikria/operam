@@ -3,27 +3,27 @@ const events = require('../helper/events');
 const MapModel = require('../data-model/map-model');
 const StringModel = require('../data-model/string-model');
 const OperationSequence = require('../helper/operation-sequence');
-const OperationHandler = require('./operation-handler');
-const OperationManager = require('./operation-manager');
+const OperationHandler = require('../operation/operation-handler');
+const OperationManager = require('../operation/operation-manager');
 
-class Model {
-  constructor(workspace) {
-    this.workspace = workspace;
-    this.operationManager = new OperationManager();
+class OTEngine {
+  constructor(document, userId) {
+    this.document = document;
+    this.userId = userId;
 
     this.lastObjectId = 0;
 
     this.factories = {};
 
-    this.workspaces = {};
+    this.documents = {};
     this.values = {};
     this.objects = {};
 
     this.events = new EventEmitter();
 
-    this.operationHandler = new OperationHandler();
+    this.operationManager = new OperationManager();
 
-    workspace.on('change', (change) => {
+    document.on('change', (change) => {
       if (!change.local) {
         change.operation.apply(this.changeHandler);
       }
@@ -32,14 +32,14 @@ class Model {
     });
 
     this.changeHandler = {
-      update: (id, type, change) => {
+      setOperation: (id, type, change) => {
         if (typeof this.values[id] !== 'undefined') {
           const current = this.values[id];
           const composed = OperationManager.DATA_TYPES[type].compose(current, change);
 
           this.values[id] = composed;
 
-          const editor = this.workspaces[id];
+          const editor = this.documents[id];
           this.remote = true;
           editor.apply({
             operation: change,
@@ -81,21 +81,21 @@ class Model {
   }
 
   newObject(type) {
-    const objectId = `${this.workspace.operationId}-${this.lastObjectId++}`;
+    const objectId = `${this.document.operationId}-${this.lastObjectId++}`;
     return this.getObject(objectId, type);
   }
 
-  open() {
-    return this.workspace.connect()
+  start() {
+    return this.document.open()
             .then(initial => initial.apply(this.changeHandler));
   }
 
   close() {
-    this.workspace.close();
+    this.document.close();
   }
 
   performEdit(callback) {
-    this.workspace.performEdit(callback);
+    this.document.performEdit(callback);
   }
 
   apply(id, type, op) {
@@ -108,7 +108,7 @@ class Model {
       this.values[id] = op;
     }
 
-    const editor = this.workspaces[id];
+    const editor = this.documents[id];
     if (editor) {
       this.remote = false;
       editor.apply({
@@ -119,9 +119,8 @@ class Model {
 
       editor.queueEvent('change', op);
     }
-
-    this.workspace.apply(new OperationHandler()
-            .update(id, type, op)
+    this.document.apply(new OperationHandler()
+            .setOperation(id, type, op)
             .done(),
         );
   }
@@ -132,7 +131,7 @@ class Model {
   }
 
   queueEvent(id, type, data) {
-    const editor = this.workspaces[id];
+    const editor = this.documents[id];
     editor.events.emit(type, new events.Event(this.remote, data));
   }
 
@@ -148,12 +147,12 @@ class Model {
   }
 
   createObject(id, type) {
-    const editor = this.createWorkspace(id, type);
-    this.workspaces[id] = editor;
+    const editor = this.createDocument(id, type);
+    this.documents[id] = editor;
     return this.factories[type](editor);
   }
 
-  createWorkspace(id, type) {
+  createDocument(id, type) {
     const self = this;
     return {
       objectId: id,
@@ -204,14 +203,6 @@ class Model {
   on(event, listener) {
     return this.events.on(event, listener);
   }
-
-  removeEventListener(event, listener) {
-    this.events.removeListener(event, listener);
-  }
-
-  static defaultType() {
-    return new OperationManager();
-  }
 }
 
-module.exports = Model;
+module.exports = OTEngine;

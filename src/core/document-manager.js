@@ -2,9 +2,9 @@ const uuidv4 = require('uuid/v4');
 
 const locallock = require('../helper/local-lock');
 const OperationBundle = require('../helper/operation-bundle');
-const OperationManager = require('./operation-manager');
+const OperationManager = require('../operation/operation-manager');
 
-class WorkspaceManager {
+class DocumentManager {
   constructor(historyBuffer) {
     this.historyBuffer = historyBuffer;
     this.operationManager = new OperationManager();
@@ -58,4 +58,4 @@ class WorkspaceManager {
   }
 }
 
-module.exports = WorkspaceManager;
+module.exports = DocumentManager;

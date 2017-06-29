@@ -1,39 +1,35 @@
 const EventEmitter = require('events');
-const OperationManager = require('./operation-manager');
+const OperationManager = require('../operation/operation-manager');
 
-const SYNCHRONIZED = 0;
-const AWAITING_CONFIRM = 1;
-const AWAITING_CONFIRM_WITH_BUFFER = 2;
-
-class Workspace {
-  constructor(sync) {
+class Document {
+  constructor(connector) {
     this.operationManager = new OperationManager();
-    this.sync = sync;
+    this.connector = connector;
 
     this.lastId = 0;
 
-    this.state = SYNCHRONIZED;
+    this.state = Document.SYNCHRONIZED;
     this.events = new EventEmitter();
 
     this.composing = null;
     this.composeDepth = 0;
   }
 
-  connect() {
-    return this.sync.connect(this.receive.bind(this))
+  open() {
+    return this.connector.connect(this.receive.bind(this))
             .then((initial) => {
               this.parentHistoryId = initial.historyId;
               this.current = initial.operation;
               this.operationId = initial.operationId;
 
-              this.sync.on('change', this.receive.bind(this));
+              this.connector.on('change', this.receive.bind(this));
 
               return initial.operation;
             });
   }
 
   close() {
-    this.sync.close();
+    this.connector.close();
   }
 
   performEdit(callback) {
@@ -58,14 +54,14 @@ class Workspace {
 
   receive(op) {
     switch (this.state) {
-      case SYNCHRONIZED:
+      case Document.SYNCHRONIZED:
         this.parentHistoryId = op.historyId;
         this.composeAndTriggerListeners(op.operation);
         break;
-      case AWAITING_CONFIRM:
+      case Document.IN_OLDER_STATE:
         if (this.lastSent.operationId === op.operationId) {
           this.parentHistoryId = op.historyId;
-          this.state = SYNCHRONIZED;
+          this.state = Document.SYNCHRONIZED;
         } else {
           const transformed = this.operationManager.transform(
                         op.operation,
@@ -83,17 +79,17 @@ class Workspace {
           this.composeAndTriggerListeners(transformed.left);
         }
         break;
-      case AWAITING_CONFIRM_WITH_BUFFER:
+      case Document.IN_NEWER_STATE:
         if (this.lastSent.operationId === op.operationId) {
           this.parentHistoryId = op.historyId;
-          this.state = AWAITING_CONFIRM;
+          this.state = Document.IN_OLDER_STATE;
 
           this.lastSent = {
             historyId: op.historyId,
             operationId: this.buffer.operationId,
             operation: this.buffer.operation
           };
-          this.sync.emitDocumentChange(this.lastSent);
+          this.connector.send(this.lastSent);
         } else {
           let transformed = this.operationManager.transform(
                         op.operation,
@@ -130,7 +126,7 @@ class Workspace {
 
   apply(op) {
     if (typeof this.parentHistoryId === 'undefined') {
-      throw new Error('Workspace has not been connected');
+      throw new Error('Document has not been connected');
     }
 
     if (this.composeDepth > 0) {
@@ -147,7 +143,7 @@ class Workspace {
 
     let tagged;
     switch (this.state) {
-      case SYNCHRONIZED:
+      case Document.SYNCHRONIZED:
 
         tagged = {
           historyId: this.parentHistoryId,
@@ -155,11 +151,11 @@ class Workspace {
           operation: op
         };
 
-        this.state = AWAITING_CONFIRM;
+        this.state = Document.IN_OLDER_STATE;
         this.lastSent = tagged;
-        this.sync.emitDocumentChange(tagged);
+        this.connector.send(tagged);
         break;
-      case AWAITING_CONFIRM:
+      case Document.IN_OLDER_STATE:
 
         tagged = {
           historyId: this.parentHistoryId,
@@ -167,10 +163,10 @@ class Workspace {
           operation: op
         };
 
-        this.state = AWAITING_CONFIRM_WITH_BUFFER;
+        this.state = Document.IN_NEWER_STATE;
         this.buffer = tagged;
         break;
-      case AWAITING_CONFIRM_WITH_BUFFER:
+      case Document.IN_NEWER_STATE:
 
         this.buffer.operation = this.operationManager.compose(this.buffer.operation, op);
         break;
@@ -193,8 +189,8 @@ class Workspace {
   }
 }
 
-Workspace.SYNCHRONIZED = SYNCHRONIZED;
-Workspace.AWAITING_CONFIRM = AWAITING_CONFIRM;
-Workspace.AWAITING_CONFIRM_WITH_BUFFER = AWAITING_CONFIRM_WITH_BUFFER;
+Document.SYNCHRONIZED = 0;
+Document.IN_OLDER_STATE = 1;
+Document.IN_NEWER_STATE = 2;
 
-module.exports = Workspace;
+module.exports = Document;
