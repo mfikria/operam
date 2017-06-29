@@ -1,6 +1,6 @@
 const EventEmitter = require('events');
 
-class AbstractConnector {
+class OTConnector {
   constructor(documentId) {
     this.events = new EventEmitter();
     this.documentId = documentId;
@@ -14,19 +14,7 @@ class AbstractConnector {
     throw new Error('Not implemented');
   }
 
-  onDocumentChange() {
-    throw new Error('Not implemented');
-  }
-
-  onDocumentLoad(resolve) {
-    throw new Error('Not implemented');
-  }
-
-  emitDocumentLoad() {
-    throw new Error('Not implemented');
-  }
-
-  emitDocumentChange(operation) {
+  send(operation) {
     throw new Error('Not implemented');
   }
 
@@ -35,4 +23,4 @@ class AbstractConnector {
   }
 }
 
-module.exports = AbstractConnector;
+module.exports = OTConnector;

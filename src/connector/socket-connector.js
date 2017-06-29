@@ -1,21 +1,29 @@
-const AbstractConnector = require('./abstract-connector');
+const OTConnector = require('./ot-connector');
 const OperationBundle = require('../helper/operation-bundle');
-const OperationManager = require('../core/operation-manager');
+const OperationManager = require('../operation/operation-manager');
 const Event = require('../helper/events');
 
-class SocketConnector extends AbstractConnector {
+class SocketConnector extends OTConnector {
   constructor(socket, documentId) {
     super(documentId);
     this.socket = socket;
   }
 
-  connect() {
+  handleEvents() {
     return new Promise((resolve, reject) => {
       this.onDocumentChange();
       this.onDocumentLoad(resolve);
-      this.emitDocumentLoad();
       this.onConnectError();
+      this.onReconnect();
     });
+  }
+
+  connect() {
+    this.socket.emit(Event.LOAD_DOCUMENT, {
+      documentId: this.documentId
+    });
+
+    return this.handleEvents();
   }
 
   onDocumentChange() {
@@ -48,18 +56,18 @@ class SocketConnector extends AbstractConnector {
   }
 
   onConnectError() {
-    this.socket.on('disconnect', () => {
-      console.log('test debug');
+    this.socket.on(Event.CONNECT_ERROR, () => {
+      console.log('connection error');
     });
   }
 
-  emitDocumentLoad() {
-    this.socket.emit(Event.LOAD_DOCUMENT, {
-      documentId: this.documentId
+  onReconnect() {
+    this.socket.on(Event.RECONNECT, () => {
+      console.log('reconnecting');
     });
   }
 
-  emitDocumentChange(op) {
+  send(op) {
     console.dir(op);
     this.socket.emit(Event.CHANGE_DOCUMENT, {
       documentId: this.documentId,
