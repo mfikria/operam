@@ -1,54 +1,55 @@
-const WorkspaceManager = require('./workspace-manager');
-const OperationManager = require('./operation-manager');
+const DocumentManager = require('./document-manager');
+const OperationManager = require('../operation/operation-manager');
 const HistoryBuffer = require('./history-buffer');
 const Event = require('../helper/events');
 
 class CentralServer {
   constructor(io) {
-    this.workspaceManagers = [];
+    this.documentManagers = [];
     this.io = io;
     this.handleEvents();
   }
 
   handleEvents() {
     this.io.on('connection', (socket) => {
-      socket.on(Event.LOAD_DOCUMENT, data => this.emitDocumentLoad(socket, data));
-      socket.on(Event.CHANGE_DOCUMENT, data => this.emitDocumentChange(socket, data));
-      socket.on(Event.CLOSE_DOCUMENT, (data) => {
-        socket.leave(data.documentId);
-      });
+      socket.on(Event.LOAD_DOCUMENT,
+          operationWrapper => this.onDocumentLoad(socket, operationWrapper)
+      );
+      socket.on(Event.CHANGE_DOCUMENT,
+          operationWrapper => this.onDocumentChange(operationWrapper)
+      );
+      socket.on(Event.CLOSE_DOCUMENT,
+          operationWrapper => socket.leave(operationWrapper.documentId)
+      );
     });
   }
 
-  getWorkspaceManager(documentId) {
-    if (!this.workspaceManagers[documentId]) {
+  getDocumentManager(documentId) {
+    if (!this.documentManagers[documentId]) {
       const historyBuffer = new HistoryBuffer(documentId);
-      this.workspaceManagers[documentId] = new WorkspaceManager(historyBuffer);
+      this.documentManagers[documentId] = new DocumentManager(historyBuffer);
     }
-    return this.workspaceManagers[documentId];
+    return this.documentManagers[documentId];
   }
 
-  static generateData(workspaceManager, operationId, operationWrapper) {
+  static generateData(documentId, operationWrapper) {
     return {
-      documentId: operationId,
+      documentId,
       historyId: operationWrapper.historyId,
       operationId: operationWrapper.operationId,
       operation: OperationManager.serializeObject(operationWrapper.operation)
     };
   }
 
-  emitDocumentLoad(socket, operationWrapper) {
-    const workspaceManager = this.getWorkspaceManager(operationWrapper.documentId);
+  onDocumentLoad(socket, operationWrapper) {
+    const documentManager = this.getDocumentManager(operationWrapper.documentId);
 
-    workspaceManager.latest()
+    documentManager.latest()
             .then((latest) => {
-              console.log(latest.operation.toString());
               socket.join(operationWrapper.documentId);
-
               socket.emit(
                     Event.LOAD_DOCUMENT,
                     CentralServer.generateData(
-                        workspaceManager,
                         operationWrapper.documentId,
                         latest
                     )
@@ -59,23 +60,23 @@ class CentralServer {
             });
   }
 
-  emitDocumentChange(socket, data) {
-    const workspaceManager = this.getWorkspaceManager(data.documentId);
+  onDocumentChange(operationWrapper) {
+    const documentManager = this.getDocumentManager(operationWrapper.documentId);
 
-    workspaceManager
+    documentManager
             .store(
-                data.historyId,
-                data.operationId,
-                OperationManager.deserializeObject(data.operation)
+                operationWrapper.historyId,
+                operationWrapper.operationId,
+                OperationManager.deserializeObject(operationWrapper.operation)
             )
             .then((op) => {
-              this.io.in(data.documentId).emit(
+              this.io.in(operationWrapper.documentId).emit(
                     Event.CHANGE_DOCUMENT,
-                    CentralServer.generateData(workspaceManager, data.documentId, op)
+                    CentralServer.generateData(operationWrapper.documentId, op)
                 );
             })
             .catch((e) => {
-              throw new Error(`Error during document emit document change: ${e.toString()}`);
+              throw new Error(`Error during document change: ${e.toString()}`);
             });
   }
 }
