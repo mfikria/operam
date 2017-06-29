@@ -1,12 +1,12 @@
 class OperationWrapper {
-  constructor(operationId, dataType, operation) {
+  constructor(operationId, dataType, op) {
     this.operationId = operationId;
     this.dataType = dataType;
-    this.operation = operation;
+    this.operation = op;
   }
 
   apply(handler) {
-    handler.update(this.operationId, this.dataType, this.operation);
+    handler.setOperation(this.operationId, this.dataType, this.operation);
   }
 
   invert() {
@@ -18,4 +18,4 @@ class OperationWrapper {
   }
 }
 
-exports.OperationWrapper = OperationWrapper;
+module.exports = OperationWrapper;
