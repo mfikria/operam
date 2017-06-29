@@ -1,23 +1,23 @@
 class OTModel {
-  constructor(workspace) {
-    this.workspace = workspace;
+  constructor(document) {
+    this.document = document;
   }
 
   get objectId() {
-    return this.workspace.objectId;
+    return this.document.objectId;
   }
 
   get objectType() {
-    return this.workspace.objectType;
+    return this.document.objectType;
   }
 
   on(event, listener) {
-    this.workspace.events.on(event, listener);
+    this.document.events.on(event, listener);
     return this;
   }
 
   removeEventListener(event, listener) {
-    return this.workspace.events.removeListener(event, listener);
+    return this.document.events.removeListener(event, listener);
   }
 }
 

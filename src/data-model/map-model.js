@@ -4,15 +4,15 @@ const dataValues = require('../helper/data-values');
 
 class MapModel extends OTModel {
 
-  constructor(workspace) {
-    super(workspace);
+  constructor(document) {
+    super(document);
 
     this.values = {};
 
     this.apply({
-      operation: workspace.current
+      operation: document.current
     });
-    workspace.apply = this.apply.bind(this);
+    document.apply = this.apply.bind(this);
   }
 
   apply(data) {
@@ -21,18 +21,18 @@ class MapModel extends OTModel {
         const old = this.values[id];
         delete this.values[id];
 
-        this.workspace.queueEvent('valueRemoved', {
+        this.document.queueEvent('valueRemoved', {
           key: id,
           oldValue: old
         });
       },
 
       set: (id, oldValue, newValue) => {
-        const value = dataValues.fromData(this.workspace, newValue);
+        const value = dataValues.fromData(this.document, newValue);
         const old = this.values[id];
         this.values[id] = value;
 
-        this.workspace.queueEvent('valueChanged', {
+        this.document.queueEvent('valueChanged', {
           key: id,
           oldValue: old,
           newValue: value
@@ -50,11 +50,11 @@ class MapModel extends OTModel {
     if (value) return value;
 
     if (factory) {
-      const model = this.workspace.model;
+      const model = this.document.model;
       model.performEdit(() => {
         value = this.values[key] = factory(model);
 
-        this.workspace.send(map.delta()
+        this.document.send(map.delta()
                     .set(key, dataValues.toData(null), dataValues.toData(value))
                     .done(),
                 );
@@ -67,7 +67,7 @@ class MapModel extends OTModel {
   remove(key) {
     const old = this.values[key];
     if (typeof old !== 'undefined') {
-      this.workspace.send(map.delta()
+      this.document.send(map.delta()
                 .set(key, dataValues.toData(null)),
             );
     }
@@ -79,7 +79,7 @@ class MapModel extends OTModel {
     }
 
     const old = this.values[key];
-    this.workspace.send(map.delta()
+    this.document.send(map.delta()
             .set(key, dataValues.toData(old), dataValues.toData(value))
             .done(),
         );

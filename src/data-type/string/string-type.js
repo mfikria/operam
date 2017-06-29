@@ -101,7 +101,7 @@ class StringType extends OTType {
       }
     }
 
-    while (left.hasNext && right.hasNext) {
+    while (left.hasNext() && right.hasNext()) {
       const op1 = left.next();
       const op2 = right.next();
 
@@ -114,11 +114,11 @@ class StringType extends OTType {
       }
     }
 
-    if (left.hasNext) {
+    if (left.hasNext()) {
       throw new Error('Composition failure');
     }
 
-    while (right.hasNext) {
+    while (right.hasNext()) {
       const op2 = right.next();
       op2.apply(delta);
     }
@@ -225,10 +225,10 @@ class StringType extends OTType {
       }
     }
 
-    while (left.hasNext) {
+    while (left.hasNext()) {
       const op1 = left.next();
 
-      if (right.hasNext) {
+      if (right.hasNext()) {
         const op2 = right.next();
 
         if (op1 instanceof ops.Retain) {
@@ -249,7 +249,7 @@ class StringType extends OTType {
       }
     }
 
-    while (right.hasNext) {
+    while (right.hasNext()) {
       const op2 = right.next();
       if (op2 instanceof ops.Insert) {
         const value2 = op2.value;

@@ -15,12 +15,12 @@ class MapType extends OTType {
 
     const result = [];
 
-    while (it1.hasNext) {
+    while (it1.hasNext()) {
       const op1 = it1.next();
 
       let handled = false;
 
-      while (it2.hasNext) {
+      while (it2.hasNext()) {
         const op2 = it2.next();
 
         const compared = keyComparator(op1, op2);
@@ -44,7 +44,7 @@ class MapType extends OTType {
       }
     }
 
-    while (it2.hasNext) {
+    while (it2.hasNext()) {
       result.push(it2.next());
     }
 
@@ -59,12 +59,12 @@ class MapType extends OTType {
     const deltaLeft = [];
     const deltaRight = [];
 
-    while (it1.hasNext) {
+    while (it1.hasNext()) {
       const op1 = it1.next();
 
       let handled = false;
 
-      while (it2.hasNext) {
+      while (it2.hasNext()) {
         const op2 = it2.next();
 
         const compared = keyComparator(op1, op2);
@@ -89,7 +89,7 @@ class MapType extends OTType {
       }
     }
 
-    while (it2.hasNext) {
+    while (it2.hasNext()) {
       deltaRight.push(it2.next());
     }
 

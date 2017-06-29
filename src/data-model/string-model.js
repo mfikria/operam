@@ -5,12 +5,12 @@ const string = require('../data-type/string');
 
 class StringModel extends OTModel {
 
-  constructor(workspace) {
-    super(workspace);
+  constructor(document) {
+    super(document);
 
     this.value = '';
     const self = this;
-    workspace.current.apply({
+    document.current.apply({
       retain(count) {
         throw new Error('Must only contain inserts');
       },
@@ -24,7 +24,7 @@ class StringModel extends OTModel {
       }
     });
 
-    workspace.apply = this.apply.bind(this);
+    document.apply = this.apply.bind(this);
   }
 
   apply(data) {
@@ -41,7 +41,7 @@ class StringModel extends OTModel {
         const from = index;
         index += value.length;
 
-        self.workspace.queueEvent('insert', {
+        self.document.queueEvent('insert', {
           index: from,
           value
         });
@@ -50,7 +50,7 @@ class StringModel extends OTModel {
       delete(value) {
         self.value = self.value.substr(0, index) + self.value.substr(index + value.length);
 
-        self.workspace.queueEvent('delete', {
+        self.document.queueEvent('delete', {
           index,
           fromIndex: index,
           toIndex: index + value.length,
@@ -85,12 +85,12 @@ class StringModel extends OTModel {
       }
     });
 
-    this.workspace.send(delta.done());
+    this.document.send(delta.done());
   }
 
   append(value) {
     const length = this.value.length;
-    this.workspace.send(string.delta()
+    this.document.send(string.delta()
             .retain(length)
             .insert(value)
             .done(),
@@ -108,7 +108,7 @@ class StringModel extends OTModel {
       throw new Error('index invalid');
     }
 
-    this.workspace.send(string.delta()
+    this.document.send(string.delta()
             .retain(index)
             .insert(value)
             .retain(length - index)
@@ -131,7 +131,7 @@ class StringModel extends OTModel {
     }
 
     const deleted = this.value.substring(fromIndex, toIndex);
-    this.workspace.send(string.delta()
+    this.document.send(string.delta()
             .retain(fromIndex)
             .delete(deleted)
             .retain(length - toIndex)
