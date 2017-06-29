@@ -2,7 +2,6 @@ FROM node:7.10
 
 ENV APP_DIR /usr/src/operam
 
-RUN apt-get update
 RUN npm install gulp-cli -g
 RUN npm install nightwatch -g
 RUN npm link nightwatch
