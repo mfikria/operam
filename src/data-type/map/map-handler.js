@@ -1,8 +1,10 @@
-const ops = require('./map-operation');
+const MapOperation = require('./map-operation');
 const OperationSequence = require('../../helper/operation-sequence');
+const OTHandler = require('../ot-handler');
 
-class MapDelta {
+class MapHandler extends OTHandler {
   constructor() {
+    super();
     this.values = {};
   }
 
@@ -35,11 +37,11 @@ class MapDelta {
       if (!this.values.hasOwnProperty(key)) continue;
 
       const value = this.values[key];
-      result.push(new ops.Set(key, value.oldValue, value.newValue));
+      result.push(new MapOperation.Set(key, value.oldValue, value.newValue));
     }
 
     return new OperationSequence(result);
   }
 }
 
-module.exports = MapDelta;
+module.exports = MapHandler;

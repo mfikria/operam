@@ -1,12 +1,12 @@
 const StringType = require('./string/string-type');
-const StringDelta = require('./string/string-delta');
+const StringHandler = require('./string/string-handler');
 
 exports.StringType = StringType;
 exports.newType = function (options) {
   return new StringType(options);
 };
 
-exports.StringDelta = StringDelta;
+exports.StringHandler = StringHandler;
 exports.delta = function () {
-  return new StringDelta();
+  return new StringHandler();
 };

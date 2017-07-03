@@ -2,6 +2,7 @@ const DocumentManager = require('./document-manager');
 const OperationManager = require('../operation/operation-manager');
 const HistoryBuffer = require('./history-buffer');
 const Event = require('../helper/events');
+const Sleep = require('sleep');
 
 class CentralServer {
   constructor(io) {
@@ -12,6 +13,7 @@ class CentralServer {
 
   handleEvents() {
     this.io.on('connection', (socket) => {
+      Sleep.sleep()
       socket.on(Event.LOAD_DOCUMENT,
           operationWrapper => this.onDocumentLoad(socket, operationWrapper)
       );

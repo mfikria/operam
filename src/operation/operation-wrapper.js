@@ -1,7 +1,7 @@
 class OperationWrapper {
-  constructor(operationId, dataType, op) {
-    this.operationId = operationId;
-    this.dataType = dataType;
+  constructor(id, type, op) {
+    this.operationId = id;
+    this.dataType = type;
     this.operation = op;
   }
 

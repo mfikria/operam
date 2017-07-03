@@ -2,7 +2,7 @@ const OTType = require('../ot-type');
 const OperationIterator = require('../../helper/operation-iterator');
 const OperationSequence = require('../../helper/operation-sequence');
 
-const StringDelta = require('./string-delta');
+const StringHandler = require('./string-handler');
 const ops = require('./string-operation');
 
 class StringType extends OTType {
@@ -10,7 +10,7 @@ class StringType extends OTType {
     left = new OperationIterator(left);
     right = new OperationIterator(right);
 
-    const delta = new StringDelta();
+    const delta = new StringHandler();
 
     function handleRetain(op1, op2) {
       const length1 = op1.length;
@@ -130,8 +130,8 @@ class StringType extends OTType {
     left = new OperationIterator(left);
     right = new OperationIterator(right);
 
-    const deltaLeft = new StringDelta();
-    const deltaRight = new StringDelta();
+    const deltaLeft = new StringHandler();
+    const deltaRight = new StringHandler();
 
     function handleRetain(op1, op2) {
       const length1 = op1.length;
@@ -290,7 +290,7 @@ class StringType extends OTType {
       throw new Error(`Given input is not an array, got: ${json}`);
     }
 
-    const delta = new StringDelta();
+    const delta = new StringHandler();
     json.forEach((op) => {
       switch (op[0]) {
         case 'retain':

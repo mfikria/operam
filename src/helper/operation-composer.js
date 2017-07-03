@@ -1,6 +1,6 @@
 class OperationComposer {
-  constructor(dataType) {
-    this.dataType = dataType;
+  constructor(type) {
+    this.dataType = type;
   }
 
   add(op) {

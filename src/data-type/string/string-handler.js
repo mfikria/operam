@@ -1,14 +1,16 @@
-const ops = require('./string-operation');
+const StringOperation = require('./string-operation');
 const OperationSequence = require('../../helper/operation-sequence');
+const OTHandler = require('../ot-handler');
 
 const EMPTY = 0;
 const RETAIN = 1;
 const INSERT = 2;
 const DELETE = 3;
 
-class StringDelta {
+class StringHandler extends OTHandler {
   constructor() {
-    this.ops = [];
+    super();
+    this.operations = [];
 
     this.state = EMPTY;
     this.value = '';
@@ -18,25 +20,25 @@ class StringDelta {
     switch (this.state) {
       case RETAIN:
         if (this.retainCount > 0) {
-          this.ops.push(new ops.Retain(this.retainCount));
+          this.operations.push(new StringOperation.Retain(this.retainCount));
         }
         break;
       case INSERT:
         if (this.value.length > 0) {
-          const op = new ops.Insert(this.value);
+          const op = new StringOperation.Insert(this.value);
 
-          const previous = this.ops[this.ops.length - 1];
-          if (previous instanceof ops.Delete) {
-            this.ops[this.ops.length - 1] = op;
-            this.ops.push(previous);
+          const previous = this.operations[this.operations.length - 1];
+          if (previous instanceof StringOperation.Delete) {
+            this.operations[this.operations.length - 1] = op;
+            this.operations.push(previous);
           } else {
-            this.ops.push(op);
+            this.operations.push(op);
           }
         }
         break;
       case DELETE:
         if (this.value.length > 0) {
-          this.ops.push(new ops.Delete(this.value));
+          this.operations.push(new StringOperation.Delete(this.value));
         }
         break;
     }
@@ -79,8 +81,8 @@ class StringDelta {
 
   done() {
     this.flush();
-    return new OperationSequence(this.ops);
+    return new OperationSequence(this.operations);
   }
 }
 
-module.exports = StringDelta;
+module.exports = StringHandler;

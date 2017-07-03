@@ -1,15 +1,15 @@
 class OperationSequence {
   constructor(ops) {
-    this.ops = ops;
+    this.operations = ops;
   }
 
   apply(handler) {
-    this.ops.forEach(op => op.apply(handler));
+    this.operations.forEach(op => op.apply(handler));
   }
 
   static asArray(op) {
     if (op instanceof OperationSequence) {
-      return [...op.ops];
+      return [...op.operations];
     } else if (op && op.apply) {
       return [op];
     }
@@ -17,7 +17,7 @@ class OperationSequence {
   }
 
   toString() {
-    return `OperationSequence[${this.ops}]`;
+    return `OperationSequence[${this.operations}]`;
   }
 }
 

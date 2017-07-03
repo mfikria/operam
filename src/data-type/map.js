@@ -1,12 +1,12 @@
 const MapType = require('./map/map-type');
-const MapDelta = require('./map/map-delta');
+const MapHandler = require('./map/map-handler');
 
 exports.MapType = MapType;
 exports.newType = function (options) {
   return new MapType(options);
 };
 
-exports.MapDelta = MapDelta;
+exports.MapHandler = MapHandler;
 exports.delta = function () {
-  return new MapDelta();
+  return new MapHandler();
 };

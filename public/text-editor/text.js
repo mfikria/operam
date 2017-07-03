@@ -1,6 +1,6 @@
 window.onload = function () {
     // create unique identifier per client
-  const userId = uuidv4();
+  const userId = Date.now() + "_" + Math.floor(Math.random() * 2000);
   const heading = document.getElementById('heading');
   heading.innerHTML += `: ${userId}`;
 

@@ -3,20 +3,20 @@ const OperationWrapper = require('./operation-wrapper');
 
 class OperationHandler {
   constructor() {
-    this.ops = [];
+    this.operations = [];
   }
 
   setOperation(operationId, dataType, op) {
-    if (this.ops[operationId]) {
+    if (this.operations[operationId]) {
       throw new Error(`Operation has been set. operationId: \`${operationId}\``);
     }
 
-    this.ops[operationId] = new OperationWrapper(operationId, dataType, op);
+    this.operations[operationId] = new OperationWrapper(operationId, dataType, op);
     return this;
   }
 
   done() {
-    return new OperationSequence(Object.values(this.ops));
+    return new OperationSequence(Object.values(this.operations));
   }
 }
 
