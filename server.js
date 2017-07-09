@@ -9,7 +9,7 @@ const express = require('express');
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
-io.set('transports', ['xhr-polling']);
+io.set('transports', ['polling']);
 
 const CentralServer = require('./src/core/central-server');
 
