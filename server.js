@@ -3,16 +3,14 @@ if (typeof (PhusionPassenger) !== 'undefined') {
 }
 
 const port = 3000;
-
 const express = require('express');
+const socketio = require('socket.io');
 
 const app = express();
-const http = require('http').Server(app);
-const io = require('socket.io')(http);
-
 const CentralServer = require('./src/core/central-server');
 
 const path = { root: __dirname };
+let server;
 
 // Demo text editor
 app.get('/text-editor', (req, res) => {
@@ -32,11 +30,13 @@ app.get('/flowchart-diagram', (req, res) => {
 });
 
 if (typeof (PhusionPassenger) !== 'undefined') {
-  http.listen('passenger');
+  server = app.listen('passenger');
 } else {
-  http.listen(port, () => {
+  server = app.listen(port, () => {
     console.log('Connect your client to http://localhost:3000/');
   });
 }
 
-const server = new CentralServer(io);
+const io = socketio.listen(server);
+
+const OTServer = new CentralServer(io);
