@@ -9,7 +9,6 @@ const express = require('express');
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
-io.set('transports', ['polling']);
 
 const CentralServer = require('./src/core/central-server');
 
@@ -36,7 +35,7 @@ if (typeof (PhusionPassenger) !== 'undefined') {
   http.listen('passenger');
 } else {
   http.listen(port, () => {
-    console.log('Connect your client to http://localhost:7000/');
+    console.log('Connect your client to http://localhost:3000/');
   });
 }
 
