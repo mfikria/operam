@@ -12,25 +12,14 @@ const CentralServer = require('./src/core/central-server');
 const path = { root: __dirname };
 let server;
 
-// Demo text editor
-app.get('/text-editor', (req, res) => {
-  res.sendFile('public/text-editor/index.html', path);
-});
 app.get('/operam.js', (req, res) => {
   res.sendFile('build/operam.js', path);
 });
 
-app.get('*', (req, res) => {
-  res.sendFile(`public/${req.path}`, path);
-});
-
-// Demo flowchart diagram
-app.get('/flowchart-diagram', (req, res) => {
-  res.sendFile('public/flowchart-diagram/index.html', path);
-});
+app.use(express.static('public'));
 
 if (typeof (PhusionPassenger) !== 'undefined') {
-  server = app.listen('passenger');
+  server = app.listen('/passenger');
 } else {
   server = app.listen(port, () => {
     console.log('Connect your client to http://localhost:3000/');
