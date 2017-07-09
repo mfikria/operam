@@ -3,7 +3,6 @@ const OperationBundle = require('../helper/operation-bundle');
 const OperationManager = require('../operation/operation-manager');
 const Event = require('../helper/events');
 
-
 class SocketConnector extends OTConnector {
   constructor(socket, documentId) {
     super(documentId);
@@ -69,7 +68,6 @@ class SocketConnector extends OTConnector {
   }
 
   send(op) {
-    console.dir(op);
     this.socket.emit(Event.CHANGE_DOCUMENT, {
       documentId: this.documentId,
       historyId: op.historyId,

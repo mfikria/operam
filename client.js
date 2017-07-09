@@ -17,4 +17,5 @@ exports.connection = {
 };
 
 exports.OTEngine = require('./src/core/ot-engine');
-exports.TextareaBinder = require('./src/data-binding/textarea-binding');
+exports.TextareaBinder = require('./src/data-binding/textarea-binder');
+exports.FlowchartBinder = require('./src/data-binding/flowchart-binder');

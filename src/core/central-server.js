@@ -13,7 +13,6 @@ class CentralServer {
 
   handleEvents() {
     this.io.on('connection', (socket) => {
-      Sleep.sleep()
       socket.on(Event.LOAD_DOCUMENT,
           operationWrapper => this.onDocumentLoad(socket, operationWrapper)
       );
@@ -72,6 +71,7 @@ class CentralServer {
                 OperationManager.deserializeObject(operationWrapper.operation)
             )
             .then((op) => {
+              Sleep.sleep(Math.floor(Math.random() * 3));
               this.io.in(operationWrapper.documentId).emit(
                     Event.CHANGE_DOCUMENT,
                     CentralServer.generateData(operationWrapper.documentId, op)

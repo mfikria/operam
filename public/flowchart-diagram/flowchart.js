@@ -25,30 +25,6 @@ function init() {
         }
     });
 
-    myDiagram.model.addChangedListener(function(e) {
-        if (e.isTransactionFinished) {
-            let tx = e.object;
-            if (tx === null) return;
-            if (tx instanceof go.Transaction && window.console) {
-                // window.console.log(tx.toString());
-                tx.changes.each(function(c) {
-
-                    switch (c.modelChange) {
-                        case "nodeDataArray":
-                            if (c.change === go.ChangedEvent.Insert) {
-                                console.log(e.propertyName + " added node with key: " + c.newValue.key);
-                            } else if (c.change === go.ChangedEvent.Remove) {
-                                console.log(e.propertyName + " removed node with key: " + c.oldValue.key);
-                            }
-                            break;
-
-                        default: return;
-                    }
-                });
-            }
-        }
-    });
-
     // helper definitions for node templates
 
     function nodeStyle() {
@@ -257,11 +233,7 @@ function showPorts(node, show) {
     });
 }
 
-function testAddNode() {
-    myDiagram.startTransaction("make new node");
-    myDiagram.model.addNodeData({category:"End", text:"End", key:-17, loc:"41 80"});
-    myDiagram.commitTransaction("make new node");
-}
+
 // Show the diagram's model in JSON format that the user may edit
 function save() {
     document.getElementById("mySavedModel").value = myDiagram.model.toJson();
