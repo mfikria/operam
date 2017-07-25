@@ -9,7 +9,8 @@ function init() {
                 allowDrop: true,  // must be true to accept drops from the Palette
                 "LinkDrawn": showLinkLabel,  // this DiagramEvent listener is defined below
                 "LinkRelinked": showLinkLabel,
-                "animationManager.duration": 800, // slightly longer than default (600ms) animation
+                "animationManager.isEnabled": false,
+                //"animationManager.duration": 800, // slightly longer than default (600ms) animation
                 "undoManager.isEnabled": true  // enable undo & redo
             });
 
@@ -198,7 +199,8 @@ function init() {
     myPalette =
         $(go.Palette, "myPaletteDiv",  // must name or refer to the DIV HTML element
             {
-                "animationManager.duration": 800, // slightly longer than default (600ms) animation
+                "animationManager.isEnabled": false,
+                //"animationManager.duration": 800, // slightly longer than default (600ms) animation
                 nodeTemplateMap: myDiagram.nodeTemplateMap,  // share the templates used by myDiagram
                 model: new go.GraphLinksModel([  // specify the contents of the Palette
                     { category: "Start", text: "Start" },
@@ -240,7 +242,17 @@ function save() {
     myDiagram.isModified = false;
 }
 function load() {
-    myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+    myDiagram.model = go.Model.fromJson(JSON.stringify(
+        {
+            "class": "go.GraphLinksModel",
+            "linkFromPortIdProperty": "fromPort",
+            "linkToPortIdProperty": "toPort",
+            "nodeKeyProperty": "key",
+            "linkKeyProperty": "key",
+            "nodeDataArray": [],
+            "linkDataArray": []
+        }
+    ));
 }
 
 function test() {

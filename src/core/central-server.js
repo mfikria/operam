@@ -62,6 +62,11 @@ class CentralServer {
   }
 
   onDocumentChange(operationWrapper) {
+    console.log('Wrapper:');
+    console.dir(operationWrapper);
+    console.log('Operation:');
+    operationWrapper.operation.forEach(op => console.dir(op[3]));
+    console.log('\n');
     const documentManager = this.getDocumentManager(operationWrapper.documentId);
 
     documentManager
@@ -71,7 +76,7 @@ class CentralServer {
                 OperationManager.deserializeObject(operationWrapper.operation)
             )
             .then((op) => {
-              Sleep.sleep(Math.floor(Math.random() * 3));
+              Sleep.sleep(Math.floor(Math.random() * 4));
               this.io.in(operationWrapper.documentId).emit(
                     Event.CHANGE_DOCUMENT,
                     CentralServer.generateData(operationWrapper.documentId, op)

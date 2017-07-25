@@ -13,8 +13,8 @@ class OperationWrapper {
     return new OperationWrapper(this.operationId, this.dataType, this.operation.invert());
   }
 
-  toString() {
-    return `Operation{id=${this.operationId}, type=${this.dataType}, operation=${this.operation}}`;
+  serializeObject() {
+    return `Operation{id=${this.operationId}, type=${this.dataType}, operation=${this.operation.serializeObject()}}`;
   }
 }
 

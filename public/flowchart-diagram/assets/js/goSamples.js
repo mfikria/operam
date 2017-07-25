@@ -33,7 +33,7 @@ if (window.require) {
       var selt = document.createElement("script");
       selt.async = false;
       selt.defer = false;
-      selt.src = "flowchart-diagram/assets/js/" + filename;
+      selt.src = "/flowchart-diagram/assets/js/" + filename;
       script.parentNode.insertBefore(selt, script.nextSibling);
       script = selt;
     }
@@ -46,19 +46,19 @@ var head = document.getElementsByTagName("head")[0];
 var link = document.createElement("link");
 link.type = "text/css";
 link.rel = "stylesheet";
-link.href = "flowchart-diagram/assets/css/bootstrap.min.css";
+link.href = "/flowchart-diagram/assets/css/bootstrap.min.css";
 head.appendChild(link);
 
 link = document.createElement("link");
 link.type = "text/css";
 link.rel = "stylesheet";
-link.href = "flowchart-diagram/assets/css/highlight.css";
+link.href = "/flowchart-diagram/assets/css/highlight.css";
 head.appendChild(link);
 
 link = document.createElement("link");
 link.type = "text/css";
 link.rel = "stylesheet";
-link.href = "flowchart-diagram/assets/css/main.css";
+link.href = "/flowchart-diagram/assets/css/main.css";
 head.appendChild(link);
 
 function goSamples() {
@@ -135,7 +135,7 @@ function goSamples() {
     span.className = "samplespan";
     var img = document.createElement('img');
     img.height = "200";
-    img.src = "flowchart-diagram/assets/images/screenshots/" + imgname + ".png";
+    img.src = "/flowchart-diagram/assets/images/screenshots/" + imgname + ".png";
     span.appendChild(img);
     anchor.appendChild(span);
     if (!anchor.href) continue;

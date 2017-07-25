@@ -68,7 +68,7 @@ class MapModel extends OTModel {
     const old = this.values[key];
     if (typeof old !== 'undefined') {
       this.document.send(map.delta()
-                .set(key, dataValues.toData(null)),
+                .set(key, dataValues.toData(null)).done(),
             );
     }
   }
