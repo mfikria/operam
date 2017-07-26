@@ -23,3 +23,4 @@ exports.CLOSE_DOCUMENT = 'close document';
 
 exports.CONNECT_ERROR = 'connect_error';
 exports.RECONNECT = 'reconnect';
+exports.DISCONNECT = 'disconnect';

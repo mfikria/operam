@@ -13,7 +13,7 @@ class SocketConnector extends OTConnector {
     return new Promise((resolve, reject) => {
       this.onDocumentChange();
       this.onDocumentLoad(resolve);
-      this.onConnectError();
+      this.onDisconnect();
       this.onReconnect();
     });
   }
@@ -70,9 +70,9 @@ class SocketConnector extends OTConnector {
     });
   }
 
-  onConnectError() {
-    this.socket.on(Event.CONNECT_ERROR, () => {
-      console.log('connection error');
+  onDisconnect() {
+    this.socket.on(Event.DISCONNECT, () => {
+      console.log('disconneted');
     });
   }
 
