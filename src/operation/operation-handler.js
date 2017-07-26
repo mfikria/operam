@@ -1,6 +1,10 @@
 const OperationSequence = require('../helper/operation-sequence');
 const OperationWrapper = require('./operation-wrapper');
 
+function idComparator(a, b) {
+  return a.id < b.id ? -1 : (a.id > b.id ? 1 : 0);
+}
+
 class OperationHandler {
   constructor() {
     this.operations = [];
@@ -16,13 +20,17 @@ class OperationHandler {
   }
 
   done() {
-    if (this.operations.length > 0) {
-      const values = Object.keys(this.operations).map(function (key) {
-        return this.operations[key];
-      });
-      return new OperationSequence(values);
+    const result = [];
+
+    for (const key in this.operations) {
+      if (!this.operations.hasOwnProperty(key)) continue;
+
+      const value = this.operations[key];
+      result.push(value);
     }
-    return new OperationSequence([]);
+
+    result.sort(idComparator);
+    return new OperationSequence(result);
   }
 }
 
