@@ -7,6 +7,7 @@ class SocketConnector extends OTConnector {
   constructor(socket, documentId) {
     super(documentId);
     this.socket = socket;
+    this.isOffline = false;
   }
 
   handleEvents() {
@@ -27,6 +28,7 @@ class SocketConnector extends OTConnector {
   }
 
   send(op) {
+    console.dir(op);
     this.socket.emit(Event.CHANGE_DOCUMENT, {
       documentId: this.documentId,
       historyId: op.historyId,
@@ -45,10 +47,10 @@ class SocketConnector extends OTConnector {
     this.socket.on(Event.CHANGE_DOCUMENT, (data) => {
       console.log(data.toString());
       const operationBundle = new OperationBundle(
-                data.historyId,
-                data.operationId,
-                OperationManager.deserializeObject(data.operation),
-            );
+                                    data.historyId,
+                                    data.operationId,
+                                    OperationManager.deserializeObject(data.operation),
+                                );
 
       if (data.documentId === this.documentId) {
         this.events.emit(Event.CHANGE, operationBundle);
@@ -73,6 +75,7 @@ class SocketConnector extends OTConnector {
   onDisconnect() {
     this.socket.on(Event.DISCONNECT, () => {
       console.log('disconneted');
+      setInterval(() => { console.dir(this.socket.sendBuffer); }, 2000);
     });
   }
 

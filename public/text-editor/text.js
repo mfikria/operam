@@ -4,7 +4,13 @@ window.onload = function () {
   const heading = document.getElementById('heading');
   heading.innerHTML += `: ${userId}`;
 
-  const socket = io('/', { transports: ['websocket'] });
+  const socket = io('/', { transports: [                     // enable all transports (optional if you want flashsocket)
+    'websocket',
+    'flashsocket',
+    'htmlfile',
+    'xhr-polling',
+    'jsonp-polling'
+  ] });
 
     // initialize instance
   const connector = new operam.connection.SocketConnector(socket, 'text-shared');
