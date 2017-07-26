@@ -76,7 +76,7 @@ class CentralServer {
                 OperationManager.deserializeObject(operationWrapper.operation)
             )
             .then((op) => {
-              Sleep.sleep(Math.floor(Math.random() * 4));
+              // Sleep.sleep(Math.floor(Math.random() * 4));
               this.io.in(operationWrapper.documentId).emit(
                     Event.CHANGE_DOCUMENT,
                     CentralServer.generateData(operationWrapper.documentId, op)
