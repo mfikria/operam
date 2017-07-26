@@ -15,6 +15,7 @@ exports.VALUE_REMOVED = 'valueRemoved';
 
 exports.INSERT = 'insert';
 exports.DELETE = 'delete';
+exports.CHANGE = 'change';
 
 exports.LOAD_DOCUMENT = 'load document';
 exports.CHANGE_DOCUMENT = 'change document';

@@ -26,6 +26,21 @@ class SocketConnector extends OTConnector {
     return this.handleEvents();
   }
 
+  send(op) {
+    this.socket.emit(Event.CHANGE_DOCUMENT, {
+      documentId: this.documentId,
+      historyId: op.historyId,
+      operationId: op.operationId,
+      operation: OperationManager.serializeObject(op.operation)
+    });
+  }
+
+  close() {
+    this.socket.emit(Event.CLOSE_DOCUMENT, {
+      documentId: this.documentId
+    });
+  }
+
   onDocumentChange() {
     this.socket.on(Event.CHANGE_DOCUMENT, (data) => {
       console.log(data.toString());
@@ -36,7 +51,7 @@ class SocketConnector extends OTConnector {
             );
 
       if (data.documentId === this.documentId) {
-        this.events.emit('change', operationBundle);
+        this.events.emit(Event.CHANGE, operationBundle);
       }
     });
   }
@@ -67,20 +82,6 @@ class SocketConnector extends OTConnector {
     });
   }
 
-  send(op) {
-    this.socket.emit(Event.CHANGE_DOCUMENT, {
-      documentId: this.documentId,
-      historyId: op.historyId,
-      operationId: op.operationId,
-      operation: OperationManager.serializeObject(op.operation)
-    });
-  }
-
-  close() {
-    this.socket.emit(Event.CLOSE_DOCUMENT, {
-      documentId: this.documentId
-    });
-  }
 
 }
 

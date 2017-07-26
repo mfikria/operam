@@ -1,5 +1,6 @@
 const EventEmitter = require('events');
 const OperationManager = require('../operation/operation-manager');
+const Event = require('../helper/events');
 
 class Document {
   constructor(connector) {
@@ -16,13 +17,13 @@ class Document {
   }
 
   open() {
-    return this.connector.connect(this.receive.bind(this))
+    return this.connector.connect()
             .then((initial) => {
               this.parentHistoryId = initial.historyId;
               this.current = initial.operation;
               this.operationId = initial.operationId;
 
-              this.connector.on('change', this.receive.bind(this));
+              this.connector.on(Event.CHANGE, this.receive.bind(this));
 
               return initial.operation;
             });
@@ -174,7 +175,7 @@ class Document {
         throw new Error(`Unknown state: ${this.state}`);
     }
 
-    this.events.emit('change', {
+    this.events.emit(Event.CHANGE, {
       operation: op,
       local: true
     });
@@ -182,7 +183,7 @@ class Document {
 
   composeAndTriggerListeners(op) {
     this.current = this.operationManager.compose(this.current, op);
-    this.events.emit('change', {
+    this.events.emit(Event.CHANGE, {
       operation: op,
       local: false
     });

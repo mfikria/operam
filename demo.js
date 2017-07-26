@@ -1,6 +1,6 @@
 $(document).ready(() => {
     alert(window.location.pathname);
-  if (window.location.pathname === '/text-editor') {
+  if (window.location.pathname === '/text-editor/') {
     function insertRandomWord(data) {
       const string = $('#text').val();
       index = Math.floor(Math.random() * string.length);
@@ -28,7 +28,7 @@ $(document).ready(() => {
         }
       });
     }
-  } else if (window.location.pathname === "/flowchart-editor") {
+  } else if (window.location.pathname === "/flowchart-editor/") {
 
   }
 });
