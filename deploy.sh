@@ -31,3 +31,7 @@ passenger-config validate-install
 npm install gulp-cli -g
 npm install nightwatch -g
 npm link nightwatch
+
+// stop webuzo and apache server
+sudo service webuzo stop
+sudo service httpd stop
