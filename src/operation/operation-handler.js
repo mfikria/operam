@@ -16,7 +16,10 @@ class OperationHandler {
   }
 
   done() {
-    return new OperationSequence(Object.values(this.operations));
+    const values = Object.keys(this.operations).map(function (key) {
+      return this.operations[key];
+    });
+    return new OperationSequence(values);
   }
 }
 
