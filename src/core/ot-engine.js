@@ -30,8 +30,8 @@ class OTEngine {
       this.events.emit(Event.CHANGE, change);
     });
 
-    document.on(Event.RECONNECT, (data) => {
-      console.log(data);
+    document.connector.socket.on(Event.RECONNECT, () => {
+      console.log('reconnecting');
       this.start();
     });
 
