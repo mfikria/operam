@@ -126,6 +126,16 @@ class Document {
   }
 
   apply(op) {
+      const callback = function (stackframes) {
+          const stringifiedStack = stackframes.map(sf => sf.toString()).join('\n');
+          console.log(stringifiedStack);
+      };
+
+      const errback = function (err) {
+          console.log(err.message);
+      };
+
+      StackTrace.get().then(callback).catch(errback);
     if (typeof this.parentHistoryId === 'undefined') {
       throw new Error('Document has not been connected');
     }

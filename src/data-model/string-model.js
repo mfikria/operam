@@ -66,10 +66,13 @@ class StringModel extends OTModel {
   }
 
   set(value) {
+    // discard change if value is same
     if (this.value === value) return;
 
     const delta = string.delta();
     const index = 0;
+
+    // check the different using diff algorithm
     diff(this.value, value).forEach((d) => {
       switch (d[0]) {
         case diff.EQUAL:
@@ -77,7 +80,6 @@ class StringModel extends OTModel {
           break;
         case diff.INSERT:
           delta.insert(d[1]);
-
           break;
         case diff.DELETE:
           delta.delete(d[1]);

@@ -1,5 +1,5 @@
 const EventEmitter = require('events');
-const events = require('../helper/events');
+const Event = require('../helper/events');
 const MapModel = require('../data-model/map-model');
 const StringModel = require('../data-model/string-model');
 const OperationSequence = require('../helper/operation-sequence');
@@ -9,8 +9,6 @@ const OperationManager = require('../operation/operation-manager');
 class OTEngine {
   constructor(document, userId) {
     this.document = document;
-    this.userId = userId;
-
     this.lastObjectId = 0;
 
     this.factories = {};
@@ -23,7 +21,7 @@ class OTEngine {
 
     this.operationManager = new OperationManager();
 
-    document.on('change', (change) => {
+    document.on(Event.CHANGE, (change) => {
       if (!change.local) {
         change.operation.apply(this.changeHandler);
       }
@@ -59,8 +57,8 @@ class OTEngine {
     this.registerType('string', e => new StringModel(e));
 
     this.root = this.getObject('root', 'map');
-    this.root.on('valueChanged', data => this.events.emit('valueChanged', data));
-    this.root.on('valueRemoved', data => this.events.emit('valueRemove', data));
+    this.root.on(Event.VALUE_CHANGED, data => this.events.emit('valueChanged', data));
+    this.root.on(Event.VALUE_REMOVED, data => this.events.emit('valueRemove', data));
   }
 
   registerType(type, factory) {
@@ -99,6 +97,16 @@ class OTEngine {
   }
 
   apply(id, type, op) {
+      const callback = function (stackframes) {
+          const stringifiedStack = stackframes.map(sf => sf.toString()).join('\n');
+          console.log(stringifiedStack);
+      };
+
+      const errback = function (err) {
+          console.log(err.message);
+      };
+
+      StackTrace.get().then(callback).catch(errback);
     if (typeof this.values[id] !== 'undefined') {
       const current = this.values[id];
       const composed = OperationManager.DATA_TYPES[type].compose(current, op);
@@ -132,7 +140,7 @@ class OTEngine {
 
   queueEvent(id, type, data) {
     const editor = this.documents[id];
-    editor.events.emit(type, new events.Event(this.remote, data));
+    editor.events.emit(type, new Event(this.remote, data));
   }
 
   getObject(id, type) {
@@ -176,6 +184,16 @@ class OTEngine {
 
       send(op) {
         self.apply(this.objectId, this.objectType, op);
+          const callback = function (stackframes) {
+              const stringifiedStack = stackframes.map(sf => sf.toString()).join('\n');
+              console.log(stringifiedStack);
+          };
+
+          const errback = function (err) {
+              console.log(err.message);
+          };
+
+          StackTrace.get().then(callback).catch(errback);
       },
 
       apply(op, local) {

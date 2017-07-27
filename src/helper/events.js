@@ -9,18 +9,19 @@ class Event {
   }
 }
 
-exports.Event = Event;
-exports.VALUE_CHANGED = 'valueChanged';
-exports.VALUE_REMOVED = 'valueRemoved';
+Event.VALUE_CHANGED = 'valueChanged';
+Event.VALUE_REMOVED = 'valueRemoved';
 
-exports.INSERT = 'insert';
-exports.DELETE = 'delete';
-exports.CHANGE = 'change';
+Event.INSERT = 'insert';
+Event.DELETE = 'delete';
+Event.CHANGE = 'change';
 
-exports.LOAD_DOCUMENT = 'load document';
-exports.CHANGE_DOCUMENT = 'change document';
-exports.CLOSE_DOCUMENT = 'close document';
+Event.LOAD_DOCUMENT = 'load document';
+Event.CHANGE_DOCUMENT = 'change document';
+Event.CLOSE_DOCUMENT = 'close document';
 
-exports.CONNECT_ERROR = 'connect_error';
-exports.RECONNECT = 'reconnect';
-exports.DISCONNECT = 'disconnect';
+Event.CONNECT_ERROR = 'connect_error';
+Event.RECONNECT = 'reconnect';
+Event.DISCONNECT = 'disconnect';
+
+module.exports = Event;

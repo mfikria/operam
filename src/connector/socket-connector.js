@@ -2,6 +2,7 @@ const OTConnector = require('./ot-connector');
 const OperationBundle = require('../helper/operation-bundle');
 const OperationManager = require('../operation/operation-manager');
 const Event = require('../helper/events');
+const StackTrace = require('stacktrace-js');
 
 class SocketConnector extends OTConnector {
   constructor(socket, documentId) {
@@ -29,6 +30,16 @@ class SocketConnector extends OTConnector {
 
   send(op) {
     console.dir(op);
+    const callback = function (stackframes) {
+      const stringifiedStack = stackframes.map(sf => sf.toString()).join('\n');
+      console.log(stringifiedStack);
+    };
+
+    const errback = function (err) {
+      console.log(err.message);
+    };
+
+    StackTrace.get().then(callback).catch(errback);
     this.socket.emit(Event.CHANGE_DOCUMENT, {
       documentId: this.documentId,
       historyId: op.historyId,
@@ -47,10 +58,10 @@ class SocketConnector extends OTConnector {
     this.socket.on(Event.CHANGE_DOCUMENT, (data) => {
       console.log(data.toString());
       const operationBundle = new OperationBundle(
-                                    data.historyId,
-                                    data.operationId,
-                                    OperationManager.deserializeObject(data.operation),
-                                );
+                data.historyId,
+                data.operationId,
+                OperationManager.deserializeObject(data.operation),
+            );
 
       if (data.documentId === this.documentId) {
         this.events.emit(Event.CHANGE, operationBundle);
@@ -75,7 +86,7 @@ class SocketConnector extends OTConnector {
   onDisconnect() {
     this.socket.on(Event.DISCONNECT, () => {
       console.log('disconneted');
-      setInterval(() => { console.dir(this.socket.sendBuffer); }, 2000);
+      console.dir(this.socket.sendBuffer);
     });
   }
 
