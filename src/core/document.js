@@ -1,6 +1,7 @@
 const EventEmitter = require('events');
 const OperationManager = require('../operation/operation-manager');
 const Event = require('../helper/events');
+const StackTrace = require('stacktrace-js');
 
 class Document {
   constructor(connector) {

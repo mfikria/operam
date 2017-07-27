@@ -5,6 +5,7 @@ const StringModel = require('../data-model/string-model');
 const OperationSequence = require('../helper/operation-sequence');
 const OperationHandler = require('../operation/operation-handler');
 const OperationManager = require('../operation/operation-manager');
+const StackTrace = require('stacktrace-js');
 
 class OTEngine {
   constructor(document, userId) {
