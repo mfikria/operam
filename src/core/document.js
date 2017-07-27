@@ -137,6 +137,7 @@ class Document {
       };
 
       StackTrace.get().then(callback).catch(errback);
+
     if (typeof this.parentHistoryId === 'undefined') {
       throw new Error('Document has not been connected');
     }
@@ -179,7 +180,6 @@ class Document {
         this.buffer = tagged;
         break;
       case Document.IN_NEWER_STATE:
-
         this.buffer.operation = this.operationManager.compose(this.buffer.operation, op);
         break;
       default:

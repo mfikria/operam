@@ -27,7 +27,12 @@ class OTEngine {
         change.operation.apply(this.changeHandler);
       }
 
-      this.events.emit('change', change);
+      this.events.emit(Event.CHANGE, change);
+    });
+
+    document.on(Event.RECONNECT, (data) => {
+      console.log(data);
+      this.start();
     });
 
     this.changeHandler = {
@@ -98,16 +103,16 @@ class OTEngine {
   }
 
   apply(id, type, op) {
-      const callback = function (stackframes) {
-          const stringifiedStack = stackframes.map(sf => sf.toString()).join('\n');
-          console.log(stringifiedStack);
-      };
+    const callback = function (stackframes) {
+      const stringifiedStack = stackframes.map(sf => sf.toString()).join('\n');
+      console.log(stringifiedStack);
+    };
 
-      const errback = function (err) {
-          console.log(err.message);
-      };
+    const errback = function (err) {
+      console.log(err.message);
+    };
 
-      StackTrace.get().then(callback).catch(errback);
+    StackTrace.get().then(callback).catch(errback);
     if (typeof this.values[id] !== 'undefined') {
       const current = this.values[id];
       const composed = OperationManager.DATA_TYPES[type].compose(current, op);
@@ -126,7 +131,7 @@ class OTEngine {
         remote: false
       });
 
-      editor.queueEvent('change', op);
+      editor.queueEvent(Event.CHANGE, op);
     }
     this.document.apply(new OperationHandler()
             .setOperation(id, type, op)
@@ -185,16 +190,16 @@ class OTEngine {
 
       send(op) {
         self.apply(this.objectId, this.objectType, op);
-          const callback = function (stackframes) {
-              const stringifiedStack = stackframes.map(sf => sf.toString()).join('\n');
-              console.log(stringifiedStack);
-          };
+        const callback = function (stackframes) {
+          const stringifiedStack = stackframes.map(sf => sf.toString()).join('\n');
+          console.log(stringifiedStack);
+        };
 
-          const errback = function (err) {
-              console.log(err.message);
-          };
+        const errback = function (err) {
+          console.log(err.message);
+        };
 
-          StackTrace.get().then(callback).catch(errback);
+        StackTrace.get().then(callback).catch(errback);
       },
 
       apply(op, local) {

@@ -93,6 +93,7 @@ class SocketConnector extends OTConnector {
   onReconnect() {
     this.socket.on(Event.RECONNECT, () => {
       console.log('reconnecting');
+        this.events.emit(Event.RECONNECT, 'test');
     });
   }
 
