@@ -61,13 +61,15 @@ class DocumentManager {
             let composer = this.operationManager.newOperationComposer();
             const arr = [];
             let i = historyId;
+            console.log(operationId);
             ops.forEach((op) => {
+              console.dir(op.operationId);
               if (op.operationId == operationId) {
                 const composed = composer.done();
                 if (composed) {
-                  arr.push(new OperationBundle(i - 1, uuidv4(), composed));
+                  arr.push(new OperationBundle(i, uuidv4(), composed));
                 }
-                arr.push(new OperationBundle(i, operationId, op));
+                arr.push(new OperationBundle(i + 1, operationId, op));
                 composer = this.operationManager.newOperationComposer();
               } else {
                 composer.add(op);
@@ -75,7 +77,7 @@ class DocumentManager {
               i += 1;
             });
 
-            return arr;
+            return Promise.resolve(arr);
           });
   }
 }
