@@ -16,14 +16,14 @@ class Document {
 
     this.composing = null;
     this.composeDepth = 0;
-    this.lastSent = null;
+    this.lastSent;
 
     this.connector.socket.on(Event.RECONNECT, () => {
       console.dir(this.buffer);
       this.connector.socket.emit(Event.RELOAD_DOCUMENT, {
         historyId: this.parentHistoryId,
         documentId: this.connector.documentId,
-        operationId: this.lastSent ? this.lastSent.operationId : null
+        operationId: this.lastSent === undefined ? 0 : this.lastSent.operationId
       });
       console.dir(this.lastSent);
     });
