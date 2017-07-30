@@ -25,6 +25,7 @@ class Document {
         documentId: this.connector.documentId,
         operationId: this.lastSent ? this.lastSent.operationId : null
       });
+      console.dir(this.lastSent);
     });
   }
 

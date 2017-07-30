@@ -46,7 +46,6 @@ class DocumentManager {
                   } else {
                     toStore = op;
                   }
-                  this.historyBuffer.storeIndex(operationId);
                   return this.historyBuffer.store(toStore);
                 })
                 .then((id) => {
@@ -61,17 +60,12 @@ class DocumentManager {
           .then((ops) => {
             let composer = this.operationManager.newOperationComposer();
             const arr = [];
-            let i = historyId + 1;
+            let i = historyId;
             ops.forEach((op) => {
-              if (this.historyBuffer.operationIndex[i] === operationId) {
+              if (op.operationId == operationId) {
                 const composed = composer.done();
                 if (composed) {
-                  arr.push(new OperationBundle(
-                                  i - 1,
-                              this.historyBuffer.operationIndex[i],
-                              composed
-                              )
-                          );
+                  arr.push(new OperationBundle(i - 1, uuidv4(), composed));
                 }
                 arr.push(new OperationBundle(i, operationId, op));
                 composer = this.operationManager.newOperationComposer();

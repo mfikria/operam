@@ -14,17 +14,17 @@ class CentralServer {
   handleEvents() {
     this.io.on('connection', (socket) => {
       socket.on(Event.LOAD_DOCUMENT,
-          data => this.onDocumentLoad(socket, data.documentId)
-      );
+                data => this.onDocumentLoad(socket, data.documentId)
+            );
       socket.on(Event.RELOAD_DOCUMENT,
-          data => this.onReloadDocument(socket, data.historyId, data.documentId, data.operationId)
-      );
+                data => this.onReloadDocument(socket, data.historyId, data.documentId, data.operationId)
+            );
       socket.on(Event.CHANGE_DOCUMENT,
-          data => this.onDocumentChange(data)
-      );
+                data => this.onDocumentChange(data)
+            );
       socket.on(Event.CLOSE_DOCUMENT,
-          data => socket.leave(data.documentId)
-      );
+                data => socket.leave(data.documentId)
+            );
     });
   }
 
@@ -76,7 +76,7 @@ class CentralServer {
                 OperationManager.deserializeObject(operationWrapper.operation)
             )
             .then((op) => {
-              // Sleep.sleep(Math.floor(Math.random() * 4));
+                // Sleep.sleep(Math.floor(Math.random() * 4));
               this.io.in(operationWrapper.documentId).emit(
                     Event.CHANGE_DOCUMENT,
                     CentralServer.generateData(operationWrapper.documentId, op)
@@ -90,16 +90,18 @@ class CentralServer {
   onReloadDocument(socket, historyId, documentId, operationId) {
     const documentManager = this.getDocumentManager(documentId);
     documentManager.reloadDocument(historyId, operationId)
-        .then((op) => {
-            // Sleep.sleep(Math.floor(Math.random() * 4));
-          socket.emit(
-                Event.CHANGE_DOCUMENT,
-                CentralServer.generateData(documentId, op)
-            );
-        })
-        .catch((e) => {
-          throw new Error(`Error during document change: ${e.toString()}`);
-        });
+            .then((ops) => {
+                // Sleep.sleep(Math.floor(Math.random() * 4));
+              ops.forEach((op) => {
+                socket.emit(
+                        Event.CHANGE_DOCUMENT,
+                        CentralServer.generateData(documentId, op)
+                    );
+              });
+            })
+            .catch((e) => {
+              throw new Error(`Error during document change: ${e.toString()}`);
+            });
   }
 }
 

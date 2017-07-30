@@ -27,17 +27,18 @@ class SocketConnector extends OTConnector {
   }
 
   send(op) {
+    console.log("send:");
     console.dir(op);
-    const callback = function (stackframes) {
-      const stringifiedStack = stackframes.map(sf => sf.toString()).join('\n');
-      console.log(stringifiedStack);
-    };
-
-    const errback = function (err) {
-      console.log(err.message);
-    };
-
-    StackTrace.get().then(callback).catch(errback);
+    // const callback = function (stackframes) {
+    //   const stringifiedStack = stackframes.map(sf => sf.toString()).join('\n');
+    //   console.log(stringifiedStack);
+    // };
+    //
+    // const errback = function (err) {
+    //   console.log(err.message);
+    // };
+    //
+    // StackTrace.get().then(callback).catch(errback);
     this.socket.emit(Event.CHANGE_DOCUMENT, {
       documentId: this.documentId,
       historyId: op.historyId,
@@ -59,7 +60,8 @@ class SocketConnector extends OTConnector {
                 data.operationId,
                 OperationManager.deserializeObject(data.operation),
             );
-console.dir(operationBundle);
+      console.log("receive:");
+      console.dir(operationBundle);
       if (data.documentId === this.documentId) {
         this.events.emit(Event.CHANGE, operationBundle);
       }
