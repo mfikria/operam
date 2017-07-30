@@ -30,11 +30,6 @@ class OTEngine {
       this.events.emit(Event.CHANGE, change);
     });
 
-    document.connector.socket.on(Event.RECONNECT, () => {
-      console.log('reconnecting');
-      this.start();
-    });
-
     this.changeHandler = {
       setOperation: (id, type, change) => {
         if (typeof this.values[id] !== 'undefined') {

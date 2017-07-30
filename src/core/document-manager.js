@@ -59,7 +59,7 @@ class DocumentManager {
   reloadDocument(historyId) {
     return this.lock((done) => {
       let composedOperation;
-      this.historyBuffer.from(historyId)
+      this.historyBuffer.from(historyId+1)
               .then((ops) => {
                 const composer = this.operationManager.newOperationComposer();
                 ops.forEach((op) => {

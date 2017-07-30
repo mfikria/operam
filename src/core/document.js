@@ -18,6 +18,7 @@ class Document {
     this.composeDepth = 0;
 
     this.connector.socket.on(Event.RECONNECT, () => {
+	console.dir(this.buffer);
       this.connector.socket.emit(Event.RELOAD_DOCUMENT, {
         historyId: this.parentHistoryId,
         documentId: this.connector.documentId
@@ -63,6 +64,8 @@ class Document {
   }
 
   receive(op) {
+	console.log("receive:");
+console.log(this.state);
     switch (this.state) {
       case Document.SYNCHRONIZED:
         this.parentHistoryId = op.historyId;
@@ -72,6 +75,7 @@ class Document {
         if (this.lastSent.operationId === op.operationId) {
           this.parentHistoryId = op.historyId;
           this.state = Document.SYNCHRONIZED;
+console.log("same");
         } else {
           const transformed = this.operationManager.transform(
                         op.operation,
@@ -135,6 +139,8 @@ class Document {
   }
 
   apply(op) {
+console.log("apply:");
+console.log(this.state);
     const callback = function (stackframes) {
       const stringifiedStack = stackframes.map(sf => sf.toString()).join('\n');
       console.log(stringifiedStack);

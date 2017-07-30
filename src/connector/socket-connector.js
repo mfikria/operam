@@ -59,7 +59,7 @@ class SocketConnector extends OTConnector {
                 data.operationId,
                 OperationManager.deserializeObject(data.operation),
             );
-
+console.dir(operationBundle);
       if (data.documentId === this.documentId) {
         this.events.emit(Event.CHANGE, operationBundle);
       }
