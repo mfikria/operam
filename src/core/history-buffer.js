@@ -5,6 +5,8 @@ class HistoryBuffer {
     this.documentId = documentId;
     this.operationBuffer = [];
     this.operationBuffer.push(new OperationSequence([]));
+    this.operationIndex = [];
+    this.operationIndex.push(-1);
   }
 
   latest() {
@@ -22,6 +24,10 @@ class HistoryBuffer {
   store(op) {
     this.operationBuffer.push(op);
     return Promise.resolve(this.operationBuffer.length);
+  }
+
+  storeIndex(index) {
+    this.operationIndex.push(index);
   }
 }
 

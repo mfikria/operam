@@ -16,12 +16,14 @@ class Document {
 
     this.composing = null;
     this.composeDepth = 0;
+    this.lastSent = null;
 
     this.connector.socket.on(Event.RECONNECT, () => {
-	console.dir(this.buffer);
+      console.dir(this.buffer);
       this.connector.socket.emit(Event.RELOAD_DOCUMENT, {
         historyId: this.parentHistoryId,
-        documentId: this.connector.documentId
+        documentId: this.connector.documentId,
+        operationId: this.lastSent ? this.lastSent.operationId : null
       });
     });
   }
@@ -64,8 +66,8 @@ class Document {
   }
 
   receive(op) {
-	console.log("receive:");
-console.log(this.state);
+    console.log('receive:');
+    console.log(this.state);
     switch (this.state) {
       case Document.SYNCHRONIZED:
         this.parentHistoryId = op.historyId;
@@ -75,7 +77,7 @@ console.log(this.state);
         if (this.lastSent.operationId === op.operationId) {
           this.parentHistoryId = op.historyId;
           this.state = Document.SYNCHRONIZED;
-console.log("same");
+          console.log('same');
         } else {
           const transformed = this.operationManager.transform(
                         op.operation,
@@ -139,8 +141,8 @@ console.log("same");
   }
 
   apply(op) {
-console.log("apply:");
-console.log(this.state);
+    console.log('apply:');
+    console.log(this.state);
     const callback = function (stackframes) {
       const stringifiedStack = stackframes.map(sf => sf.toString()).join('\n');
       console.log(stringifiedStack);

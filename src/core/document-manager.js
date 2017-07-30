@@ -46,7 +46,7 @@ class DocumentManager {
                   } else {
                     toStore = op;
                   }
-
+                  this.historyBuffer.storeIndex(operationId);
                   return this.historyBuffer.store(toStore);
                 })
                 .then((id) => {
@@ -56,25 +56,33 @@ class DocumentManager {
     });
   }
 
-  reloadDocument(historyId) {
-    return this.lock((done) => {
-      let composedOperation;
-      this.historyBuffer.from(historyId+1)
-              .then((ops) => {
-                const composer = this.operationManager.newOperationComposer();
-                ops.forEach((op) => {
-                  composer.add(op);
-                });
-                composedOperation = composer.done();
+  reloadDocument(historyId, operationId) {
+    return this.historyBuffer.from(historyId + 1)
+          .then((ops) => {
+            let composer = this.operationManager.newOperationComposer();
+            const arr = [];
+            let i = historyId + 1;
+            ops.forEach((op) => {
+              if (this.historyBuffer.operationIndex[i] === operationId) {
+                const composed = composer.done();
+                if (composed) {
+                  arr.push(new OperationBundle(
+                                  i - 1,
+                              this.historyBuffer.operationIndex[i],
+                              composed
+                              )
+                          );
+                }
+                arr.push(new OperationBundle(i, operationId, op));
+                composer = this.operationManager.newOperationComposer();
+              } else {
+                composer.add(op);
+              }
+              i += 1;
+            });
 
-                return this.historyBuffer.latest();
-              })
-              .then((id) => {
-                const operationId = uuidv4();
-                done(null, new OperationBundle(id, operationId, composedOperation));
-              })
-              .catch(err => done(err));
-    });
+            return arr;
+          });
   }
 }
 
