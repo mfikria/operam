@@ -14,35 +14,34 @@ class DocumentManager {
 
   latest() {
     return this.historyBuffer.latest()
-            .then(id => this.historyBuffer.until(id + 1)
+        .then(historyId => this.historyBuffer.until(historyId + 1)
                 .then((items) => {
-                  const sessionId = uuidv4();
+                  const operationId = uuidv4();
 
                   const composer = this.operationManager.newOperationComposer();
                   items.forEach((item) => {
                     composer.add(item);
                   });
 
-                  const composed = composer.done();
-                  return new OperationBundle(id, sessionId, composed);
-                }));
+                  const composedOperation = composer.done();
+                  return new OperationBundle(historyId, operationId, composedOperation);
+                })
+        );
   }
 
   store(historyId, operationId, op) {
     return this.lock((done) => {
       let toStore;
       this.historyBuffer.from(historyId + 1)
-                .then((items) => {
-                  const operationManager = this.operationManager;
-
-                  const composer = operationManager.newOperationComposer();
-                  items.forEach((item) => {
-                    composer.add(item);
+                .then((ops) => {
+                  const composer = this.operationManager.newOperationComposer();
+                  ops.forEach((op) => {
+                    composer.add(op);
                   });
-                  const composed = composer.done();
+                  const composedOperation = composer.done();
 
-                  if (composed) {
-                    const transformed = operationManager.transform(composed, op);
+                  if (composedOperation) {
+                    const transformed = this.operationManager.transform(composedOperation, op);
                     toStore = transformed.right;
                   } else {
                     toStore = op;
@@ -50,10 +49,31 @@ class DocumentManager {
 
                   return this.historyBuffer.store(toStore);
                 })
-                .then((historyId) => {
-                  done(null, new OperationBundle(historyId, operationId, toStore));
+                .then((id) => {
+                  done(null, new OperationBundle(id, operationId, toStore));
                 })
                 .catch(err => done(err));
+    });
+  }
+
+  reloadDocument(historyId) {
+    return this.lock((done) => {
+      let composedOperation;
+      this.historyBuffer.from(historyId)
+              .then((ops) => {
+                const composer = this.operationManager.newOperationComposer();
+                ops.forEach((op) => {
+                  composer.add(op);
+                });
+                composedOperation = composer.done();
+
+                return this.historyBuffer.latest();
+              })
+              .then((id) => {
+                const operationId = uuidv4();
+                done(null, new OperationBundle(id, operationId, composedOperation));
+              })
+              .catch(err => done(err));
     });
   }
 }

@@ -76,10 +76,6 @@ class OTEngine {
     return this.newObject('map');
   }
 
-  newList() {
-    return this.newObject('list');
-  }
-
   newString() {
     return this.newObject('string');
   }

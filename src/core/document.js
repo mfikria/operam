@@ -12,9 +12,17 @@ class Document {
 
     this.state = Document.SYNCHRONIZED;
     this.events = new EventEmitter();
+    this.parentHistoryId = 0;
 
     this.composing = null;
     this.composeDepth = 0;
+
+    this.connector.socket.on(Event.RECONNECT, () => {
+      this.connector.socket.emit(Event.RELOAD_DOCUMENT, {
+        historyId: this.parentHistoryId,
+        documentId: this.connector.documentId
+      });
+    });
   }
 
   open() {
@@ -31,7 +39,7 @@ class Document {
   }
 
   close() {
-    this.connector.close();
+    this.connector.disconnect();
   }
 
   performEdit(callback) {
@@ -127,16 +135,16 @@ class Document {
   }
 
   apply(op) {
-      const callback = function (stackframes) {
-          const stringifiedStack = stackframes.map(sf => sf.toString()).join('\n');
-          console.log(stringifiedStack);
-      };
+    const callback = function (stackframes) {
+      const stringifiedStack = stackframes.map(sf => sf.toString()).join('\n');
+      console.log(stringifiedStack);
+    };
 
-      const errback = function (err) {
-          console.log(err.message);
-      };
+    const errback = function (err) {
+      console.log(err.message);
+    };
 
-      StackTrace.get().then(callback).catch(errback);
+    StackTrace.get().then(callback).catch(errback);
 
     if (typeof this.parentHistoryId === 'undefined') {
       throw new Error('Document has not been connected');

@@ -14,13 +14,16 @@ class CentralServer {
   handleEvents() {
     this.io.on('connection', (socket) => {
       socket.on(Event.LOAD_DOCUMENT,
-          operationWrapper => this.onDocumentLoad(socket, operationWrapper)
+          data => this.onDocumentLoad(socket, data.documentId)
+      );
+      socket.on(Event.RELOAD_DOCUMENT,
+          data => this.onReloadDocument(socket, data.historyId, data.documentId)
       );
       socket.on(Event.CHANGE_DOCUMENT,
-          operationWrapper => this.onDocumentChange(operationWrapper)
+          data => this.onDocumentChange(data)
       );
       socket.on(Event.CLOSE_DOCUMENT,
-          operationWrapper => socket.leave(operationWrapper.documentId)
+          data => socket.leave(data.documentId)
       );
     });
   }
@@ -42,16 +45,16 @@ class CentralServer {
     };
   }
 
-  onDocumentLoad(socket, operationWrapper) {
-    const documentManager = this.getDocumentManager(operationWrapper.documentId);
+  onDocumentLoad(socket, documentId) {
+    const documentManager = this.getDocumentManager(documentId);
 
     documentManager.latest()
             .then((latest) => {
-              socket.join(operationWrapper.documentId);
+              socket.join(documentId);
               socket.emit(
                     Event.LOAD_DOCUMENT,
                     CentralServer.generateData(
-                        operationWrapper.documentId,
+                        documentId,
                         latest
                     )
                 );
@@ -62,13 +65,10 @@ class CentralServer {
   }
 
   onDocumentChange(operationWrapper) {
-    console.log('Wrapper:');
-    console.dir(operationWrapper);
     console.log('Operation:');
     operationWrapper.operation.forEach(op => console.dir(op[3]));
     console.log('\n');
     const documentManager = this.getDocumentManager(operationWrapper.documentId);
-
     documentManager
             .store(
                 operationWrapper.historyId,
@@ -85,6 +85,21 @@ class CentralServer {
             .catch((e) => {
               throw new Error(`Error during document change: ${e.toString()}`);
             });
+  }
+
+  onReloadDocument(socket, historyId, documentId) {
+    const documentManager = this.getDocumentManager(documentId);
+    documentManager.reloadDocument(historyId)
+        .then((op) => {
+            // Sleep.sleep(Math.floor(Math.random() * 4));
+          socket.emit(
+                Event.CHANGE_DOCUMENT,
+                CentralServer.generateData(documentId, op)
+            );
+        })
+        .catch((e) => {
+          throw new Error(`Error during document change: ${e.toString()}`);
+        });
   }
 }
 

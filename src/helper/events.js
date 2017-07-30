@@ -19,6 +19,7 @@ Event.CHANGE = 'change';
 Event.LOAD_DOCUMENT = 'load document';
 Event.CHANGE_DOCUMENT = 'change document';
 Event.CLOSE_DOCUMENT = 'close document';
+Event.RELOAD_DOCUMENT = 'reload document';
 
 Event.CONNECT_ERROR = 'connect_error';
 Event.RECONNECT = 'reconnect';

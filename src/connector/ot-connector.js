@@ -10,15 +10,15 @@ class OTConnector {
     return this.events.on(event, listener);
   }
 
+  send(op) {
+      throw new Error('Not implemented');
+  }
+
   connect() {
     throw new Error('Not implemented');
   }
 
-  send(operation) {
-    throw new Error('Not implemented');
-  }
-
-  close() {
+  disconnect() {
     throw new Error('Not implemented');
   }
 }
