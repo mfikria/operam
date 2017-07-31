@@ -20,6 +20,7 @@ class Document {
 
     this.connector.socket.on(Event.RECONNECT, () => {
       console.dir(this.buffer);
+      this.connector.onDocumentChange();
       this.connector.socket.emit(Event.RELOAD_DOCUMENT, {
         historyId: this.parentHistoryId,
         documentId: this.connector.documentId,
@@ -77,6 +78,7 @@ class Document {
       case Document.IN_OLDER_STATE:
         if (this.lastSent.operationId === op.operationId || this.lastSent.operation.operations[0].operationId === op.operationId) {
           this.parentHistoryId = op.historyId;
+          console.log("aman");
           this.state = Document.SYNCHRONIZED;
         } else {
           const transformed = this.operationManager.transform(

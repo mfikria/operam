@@ -88,6 +88,7 @@ class CentralServer {
   }
 
   onReloadDocument(socket, historyId, documentId, operationId) {
+    socket.join(documentId);
     const documentManager = this.getDocumentManager(documentId);
     documentManager.reloadDocument(historyId, operationId)
             .then((ops) => {
