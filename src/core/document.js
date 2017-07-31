@@ -20,7 +20,6 @@ class Document {
 
     this.connector.socket.on(Event.RECONNECT, () => {
       console.dir(this.buffer);
-      this.connector.onDocumentChange();
       this.connector.socket.emit(Event.RELOAD_DOCUMENT, {
         historyId: this.parentHistoryId,
         documentId: this.connector.documentId,
