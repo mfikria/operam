@@ -88,7 +88,7 @@ class DocumentManager {
                 ops.forEach((op) => {
                   console.dir(op.operationId);
                   if (op.operations[0].operationId === operationId) {
-                    const composed = composer.done();
+                    let composed = composer.done();
                     if (composed) {
                       arr.push(new OperationBundle(i, uuidv4(), composed));
                     }
@@ -99,7 +99,7 @@ class DocumentManager {
                   }
                   i += 1;
                 });
-                const composed = composer.done();
+                let composed = composer.done();
                 if (composed) {
                   arr.push(new OperationBundle(i, uuidv4(), composed));
                 }
