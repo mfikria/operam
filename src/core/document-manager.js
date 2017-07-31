@@ -80,16 +80,30 @@ class DocumentManager {
     //         return Promise.resolve(arr);
     //       });
     // return this.lock((done) => {
-    let composedOperation;
     return this.historyBuffer.from(historyId + 1)
               .then((ops) => {
-                const composer = this.operationManager.newOperationComposer();
+                let composer = this.operationManager.newOperationComposer();
+                const arr = [];
+                let i = historyId;
                 ops.forEach((op) => {
-                  composer.add(op);
+                  console.dir(op.operationId);
+                  if (op.operations[0].operationId === operationId) {
+                    const composed = composer.done();
+                    if (composed) {
+                      arr.push(new OperationBundle(i, uuidv4(), composed));
+                    }
+                    arr.push(new OperationBundle(i + 1, operationId, op));
+                    composer = this.operationManager.newOperationComposer();
+                  } else {
+                    composer.add(op);
+                  }
+                  i += 1;
                 });
-                composedOperation = composer.done();
-                const operationId2 = uuidv4();
-                return Promise.resolve(new OperationBundle(this.historyBuffer.latest(), operationId2, composedOperation));
+                const composed = composer.done();
+                if (composed) {
+                  arr.push(new OperationBundle(i, uuidv4(), composed));
+                }
+                return Promise.resolve(arr);
               });
     // });
   }

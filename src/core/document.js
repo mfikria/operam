@@ -23,7 +23,7 @@ class Document {
       this.connector.socket.emit(Event.RELOAD_DOCUMENT, {
         historyId: this.parentHistoryId,
         documentId: this.connector.documentId,
-        operationId: this.lastSent === undefined ? 0 : this.lastSent.operationId
+        operationId: this.lastSent === undefined ? 0 : this.lastSent.operation.operations[0].operationId
       });
       console.dir(this.lastSent);
     });
@@ -75,10 +75,9 @@ class Document {
         this.composeAndTriggerListeners(op.operation);
         break;
       case Document.IN_OLDER_STATE:
-        if (this.lastSent.operationId === op.operationId) {
+        if (this.lastSent.operationId === op.operationId || this.lastSent.operation.operations[0].operationId === op.operationId) {
           this.parentHistoryId = op.historyId;
           this.state = Document.SYNCHRONIZED;
-          console.log('same');
         } else {
           const transformed = this.operationManager.transform(
                         op.operation,
@@ -97,7 +96,7 @@ class Document {
         }
         break;
       case Document.IN_NEWER_STATE:
-        if (this.lastSent.operationId === op.operationId) {
+        if (this.lastSent.operationId === op.operationId || this.lastSent.operation.operations[0].operationId === op.operationId) {
           this.parentHistoryId = op.historyId;
           this.state = Document.IN_OLDER_STATE;
 
