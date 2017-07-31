@@ -92,12 +92,16 @@ class CentralServer {
     documentManager.reloadDocument(historyId, operationId)
             .then((ops) => {
                 // Sleep.sleep(Math.floor(Math.random() * 4));
-              ops.forEach((op) => {
-                socket.emit(
-                        Event.CHANGE_DOCUMENT,
-                        CentralServer.generateData(documentId, op)
-                    );
-              });
+              // ops.forEach((op) => {
+              //   socket.emit(
+              //           Event.CHANGE_DOCUMENT,
+              //           CentralServer.generateData(documentId, op)
+              //       );
+              // });
+              socket.emit(
+                    Event.CHANGE_DOCUMENT,
+                    CentralServer.generateData(documentId, ops)
+                );
             })
             .catch((e) => {
               throw new Error(`Error during document change: ${e.toString()}`);
