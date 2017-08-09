@@ -25,9 +25,13 @@ class Document {
 
     this.connector.socket.on(Event.DISCONNECT, () => {
       this.disconnect = true;
+
     });
 
     this.connector.socket.on(Event.RECONNECT, () => {
+      console.log("test");
+      console.log(this.parentHistoryId);
+      console.dir(this.lastSent);
       console.dir(this.buffer);
       this.connector.socket.emit(Event.RELOAD_DOCUMENT, {
         historyId: this.parentHistoryId,

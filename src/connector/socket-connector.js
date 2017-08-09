@@ -32,7 +32,7 @@ class SocketConnector extends OTConnector {
   send(op) {
     console.log('send:');
     console.log(`HistoryId: ${op.historyId}`);
-    console.dir(op.operation.operations);
+    console.dir(op);
     // const callback = function (stackframes) {
     //   const stringifiedStack = stackframes.map(sf => sf.toString()).join('\n');
     //   console.log(stringifiedStack);
