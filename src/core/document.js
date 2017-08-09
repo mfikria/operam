@@ -3,6 +3,7 @@ const OperationManager = require('../operation/operation-manager');
 const Event = require('../helper/events');
 const StackTrace = require('stacktrace-js');
 const LocalDB = require('./local-db');
+const Sleep = require('sleep');
 
 class Document {
   constructor(connector, userId) {
@@ -20,6 +21,11 @@ class Document {
     this.composing = null;
     this.composeDepth = 0;
     this.lastSent;
+    this.disconnect = false;
+
+    this.connector.socket.on(Event.DISCONNECT, () => {
+      this.disconnect = true;
+    });
 
     this.connector.socket.on(Event.RECONNECT, () => {
       console.dir(this.buffer);
@@ -28,7 +34,6 @@ class Document {
         documentId: this.connector.documentId,
         operationId: this.lastSent === undefined ? 0 : this.lastSent.operation.operations[0].operationId
       });
-      location.reload();
     });
   }
 
@@ -159,6 +164,11 @@ class Document {
         break;
       default:
         throw new Error(`Unknown state: ${this.state}`);
+    }
+    if (this.disconnect) {
+      Sleep.sleep(1.5);
+      location.reload();
+      this.disconnect = false;
     }
 
     this.localDB.store(this.state, this.parentHistoryId, this.lastSent, this.buffer);
