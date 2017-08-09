@@ -21,6 +21,7 @@ class Document {
     this.composing = null;
     this.composeDepth = 0;
     this.lastSent;
+    this.lastSentBackUp;
     this.disconnect = false;
 
     this.connector.socket.on(Event.DISCONNECT, () => {
@@ -221,6 +222,7 @@ class Document {
 
         this.state = Document.IN_OLDER_STATE;
         this.lastSent = tagged;
+        this.lastSentBackup = tagged;
         this.connector.send(tagged);
         break;
       case Document.IN_OLDER_STATE:
