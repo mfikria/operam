@@ -3,7 +3,7 @@ const OperationManager = require('../operation/operation-manager');
 const Event = require('../helper/events');
 const StackTrace = require('stacktrace-js');
 const LocalDB = require('./local-db');
-const Sleep = require('sleep');
+// const Sleep = require('sleep');
 
 class Document {
   constructor(connector, userId) {
@@ -170,9 +170,9 @@ class Document {
         throw new Error(`Unknown state: ${this.state}`);
     }
     if (this.disconnect) {
-      Sleep.sleep(1.5);
-      location.reload();
-      this.disconnect = false;
+      // Sleep.sleep(1.5);
+      // location.reload();
+      // this.disconnect = false;
     }
 
     this.localDB.store(this.state, this.parentHistoryId, this.lastSent, this.buffer);
