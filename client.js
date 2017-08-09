@@ -8,7 +8,8 @@ exports.datatype = {
 exports.core = {
     Document: require('./src/core/document'),
     DocumentManager: require('./src/core/document-manager'),
-    OperationBundle: require('./src/helper/operation-bundle')
+    OperationBundle: require('./src/helper/operation-bundle'),
+    LocalDB: require('./src/core/local-db')
 };
 
 exports.connection = {

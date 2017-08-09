@@ -8,7 +8,7 @@ const OperationManager = require('../operation/operation-manager');
 const StackTrace = require('stacktrace-js');
 
 class OTEngine {
-  constructor(document, userId) {
+  constructor(document) {
     this.document = document;
     this.lastObjectId = 0;
 
@@ -21,6 +21,7 @@ class OTEngine {
     this.events = new EventEmitter();
 
     this.operationManager = new OperationManager();
+    this.avgExecTime = [];
 
     document.on(Event.CHANGE, (change) => {
       if (!change.local) {
@@ -94,16 +95,6 @@ class OTEngine {
   }
 
   apply(id, type, op) {
-    const callback = function (stackframes) {
-      const stringifiedStack = stackframes.map(sf => sf.toString()).join('\n');
-      console.log(stringifiedStack);
-    };
-
-    const errback = function (err) {
-      console.log(err.message);
-    };
-
-    StackTrace.get().then(callback).catch(errback);
     if (typeof this.values[id] !== 'undefined') {
       const current = this.values[id];
       const composed = OperationManager.DATA_TYPES[type].compose(current, op);
@@ -181,16 +172,6 @@ class OTEngine {
 
       send(op) {
         self.apply(this.objectId, this.objectType, op);
-        const callback = function (stackframes) {
-          const stringifiedStack = stackframes.map(sf => sf.toString()).join('\n');
-          console.log(stringifiedStack);
-        };
-
-        const errback = function (err) {
-          console.log(err.message);
-        };
-
-        StackTrace.get().then(callback).catch(errback);
       },
 
       apply(op, local) {

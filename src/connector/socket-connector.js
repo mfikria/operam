@@ -8,6 +8,8 @@ class SocketConnector extends OTConnector {
   constructor(socket, documentId) {
     super(documentId);
     this.socket = socket;
+    this.t0 = window.performance.now();
+    this.t1 = 0;
   }
 
   handleEvents() {
@@ -18,17 +20,19 @@ class SocketConnector extends OTConnector {
     });
   }
 
-  connect() {
+  connect(historyId) {
     this.socket.emit(Event.LOAD_DOCUMENT, {
-      documentId: this.documentId
+      documentId: this.documentId,
+      historyId
     });
 
     return this.handleEvents();
   }
 
   send(op) {
-    console.log("send:");
-    console.dir(op);
+    console.log('send:');
+    console.log(`HistoryId: ${op.historyId}`);
+    console.dir(op.operation.operations);
     // const callback = function (stackframes) {
     //   const stringifiedStack = stackframes.map(sf => sf.toString()).join('\n');
     //   console.log(stringifiedStack);
@@ -60,8 +64,9 @@ class SocketConnector extends OTConnector {
                 data.operationId,
                 OperationManager.deserializeObject(data.operation),
             );
-      console.log("receive:");
-      console.dir(operationBundle);
+      console.log('receive:');
+      console.log(`History id ${data.historyId}`);
+      console.dir(data.operation.operations);
       if (data.documentId === this.documentId) {
         this.events.emit(Event.CHANGE, operationBundle);
       }

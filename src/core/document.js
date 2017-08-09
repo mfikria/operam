@@ -2,11 +2,14 @@ const EventEmitter = require('events');
 const OperationManager = require('../operation/operation-manager');
 const Event = require('../helper/events');
 const StackTrace = require('stacktrace-js');
+const LocalDB = require('./local-db');
 
 class Document {
-  constructor(connector) {
+  constructor(connector, userId) {
     this.operationManager = new OperationManager();
     this.connector = connector;
+    this.userId = userId;
+    this.localDB = new LocalDB(userId, this.connector.documentId);
 
     this.lastId = 0;
 
@@ -30,8 +33,27 @@ class Document {
   }
 
   open() {
-    return this.connector.connect()
+    let id = -1;
+    if (!this.localDB.isSync()) {
+      const data = this.localDB.getLatest();
+      if (data) {
+        id = this.localDB.getHistoryId();
+        this.lastSent = data.lastSent;
+        this.parentHistoryId = data.parentHistoryId;
+        this.buffer = data.buffer;
+        this.state = data.state;
+
+        this.connector.socket.emit(Event.RELOAD_DOCUMENT, {
+          historyId: this.parentHistoryId,
+          documentId: this.connector.documentId,
+          operationId: this.lastSent === undefined ? 0 : this.lastSent.operation.operations[0].operationId
+        });
+      }
+    }
+    return this.connector.connect(id)
             .then((initial) => {
+              // change to sync
+              // this.localDB.sync();
               this.parentHistoryId = initial.historyId;
               this.current = initial.operation;
               this.operationId = initial.operationId;
@@ -67,8 +89,8 @@ class Document {
   }
 
   receive(op) {
-    console.log('receive:');
-    console.log(this.state);
+    // console.log('receive:');
+    // console.log(this.state);
     switch (this.state) {
       case Document.SYNCHRONIZED:
         this.parentHistoryId = op.historyId;
@@ -77,7 +99,6 @@ class Document {
       case Document.IN_OLDER_STATE:
         if (this.lastSent.operationId === op.operationId || this.lastSent.operation.operations[0].operationId === op.operationId) {
           this.parentHistoryId = op.historyId;
-          console.log("aman");
           this.state = Document.SYNCHRONIZED;
         } else {
           const transformed = this.operationManager.transform(
@@ -139,21 +160,23 @@ class Document {
       default:
         throw new Error(`Unknown state: ${this.state}`);
     }
+
+    this.localDB.store(this.state, this.parentHistoryId, this.lastSent, this.buffer);
   }
 
   apply(op) {
-    console.log('apply:');
-    console.log(this.state);
-    const callback = function (stackframes) {
-      const stringifiedStack = stackframes.map(sf => sf.toString()).join('\n');
-      console.log(stringifiedStack);
-    };
-
-    const errback = function (err) {
-      console.log(err.message);
-    };
-
-    StackTrace.get().then(callback).catch(errback);
+    // console.log('apply:');
+    // console.log(this.state);
+    // const callback = function (stackframes) {
+    //   const stringifiedStack = stackframes.map(sf => sf.toString()).join('\n');
+    //   console.log(stringifiedStack);
+    // };
+    //
+    // const errback = function (err) {
+    //   console.log(err.message);
+    // };
+    //
+    // StackTrace.get().then(callback).catch(errback);
 
     if (typeof this.parentHistoryId === 'undefined') {
       throw new Error('Document has not been connected');
@@ -207,6 +230,8 @@ class Document {
       operation: op,
       local: true
     });
+
+    this.localDB.store(this.state, this.parentHistoryId, this.lastSent, this.buffer);
   }
 
   composeAndTriggerListeners(op) {

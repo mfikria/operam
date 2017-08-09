@@ -10,8 +10,8 @@ window.onload = function () {
 
     // initialize instance
   const connector = new operam.connection.SocketConnector(socket, 'flowchart-shared');
-  const currentDocument = new operam.core.Document(connector);
-  const engine = new operam.OTEngine(currentDocument, userId);
+  const currentDocument = new operam.core.Document(connector, userId);
+  const engine = new operam.OTEngine(currentDocument);
 
   engine.start()
         .then(() => {

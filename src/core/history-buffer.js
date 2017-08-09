@@ -21,9 +21,6 @@ class HistoryBuffer {
 
   store(op) {
     this.operationBuffer.push(op);
-    this.operationBuffer.forEach((op2) => {
-      console.dir(op2);
-    });
     return Promise.resolve(this.operationBuffer.length);
   }
 }

@@ -29,6 +29,21 @@ class DocumentManager {
         );
   }
 
+  until(historyId) {
+    return this.historyBuffer.until(historyId + 1)
+              .then((items) => {
+                const operationId = uuidv4();
+
+                const composer = this.operationManager.newOperationComposer();
+                items.forEach((item) => {
+                  composer.add(item);
+                });
+
+                const composedOperation = composer.done();
+                return new OperationBundle(historyId, operationId, composedOperation);
+              });
+  }
+
   store(historyId, operationId, op) {
     return this.lock((done) => {
       let toStore;
@@ -88,7 +103,7 @@ class DocumentManager {
                 ops.forEach((op) => {
                   console.dir(op.operationId);
                   if (op.operations[0].operationId === operationId) {
-                    let composed = composer.done();
+                    const composed = composer.done();
                     if (composed) {
                       arr.push(new OperationBundle(i, uuidv4(), composed));
                     }
@@ -99,7 +114,7 @@ class DocumentManager {
                   }
                   i += 1;
                 });
-                let composed = composer.done();
+                const composed = composer.done();
                 if (composed) {
                   arr.push(new OperationBundle(i, uuidv4(), composed));
                 }

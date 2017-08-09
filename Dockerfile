@@ -11,3 +11,5 @@ RUN cd $APP_DIR && npm install --quiet
 
 WORKDIR $APP_DIR
 COPY ./ $APP_DIR
+
+RUN gulp build

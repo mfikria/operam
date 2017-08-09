@@ -3,18 +3,20 @@ const OperationManager = require('../operation/operation-manager');
 const HistoryBuffer = require('./history-buffer');
 const Event = require('../helper/events');
 const Sleep = require('sleep');
+const average = (array) => array.reduce((a, b) => a + b) / array.length;
 
 class CentralServer {
   constructor(io) {
     this.documentManagers = [];
     this.io = io;
     this.handleEvents();
+    
   }
 
   handleEvents() {
     this.io.on('connection', (socket) => {
       socket.on(Event.LOAD_DOCUMENT,
-                data => this.onDocumentLoad(socket, data.documentId)
+                data => this.onDocumentLoad(socket, data.documentId, data.historyId)
             );
       socket.on(Event.RELOAD_DOCUMENT,
                 data => this.onReloadDocument(socket, data.historyId, data.documentId, data.operationId)
@@ -45,13 +47,13 @@ class CentralServer {
     };
   }
 
-  onDocumentLoad(socket, documentId) {
+  onDocumentLoad(socket, documentId, historyId) {
     const documentManager = this.getDocumentManager(documentId);
-
-    documentManager.latest()
+    if(historyId == -1) {
+        documentManager.latest()
             .then((latest) => {
-              socket.join(documentId);
-              socket.emit(
+                socket.join(documentId);
+                socket.emit(
                     Event.LOAD_DOCUMENT,
                     CentralServer.generateData(
                         documentId,
@@ -60,14 +62,30 @@ class CentralServer {
                 );
             })
             .catch((e) => {
-              throw new Error(`Error during document load: ${e.toString()}`);
+                throw new Error(`Error during document load: ${e.toString()}`);
             });
+    } else {
+        documentManager.until(historyId)
+            .then((latest) => {
+                socket.join(documentId);
+                socket.emit(
+                    Event.LOAD_DOCUMENT,
+                    CentralServer.generateData(
+                        documentId,
+                        latest
+                    )
+                );
+            })
+            .catch((e) => {
+                throw new Error(`Error during document load: ${e.toString()}`);
+            });
+    }
+
   }
 
   onDocumentChange(operationWrapper) {
-    console.log('Operation:');
+
     operationWrapper.operation.forEach(op => console.dir(op[3]));
-    console.log('\n');
     const documentManager = this.getDocumentManager(operationWrapper.documentId);
     documentManager
             .store(
@@ -85,6 +103,7 @@ class CentralServer {
             .catch((e) => {
               throw new Error(`Error during document change: ${e.toString()}`);
             });
+
   }
 
   onReloadDocument(socket, historyId, documentId, operationId) {
