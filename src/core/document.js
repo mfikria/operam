@@ -34,7 +34,7 @@ class Document {
       console.log(this.parentHistoryId);
       console.dir(this.lastSent);
       console.dir(this.buffer);
-      this.connector.send(this.lastSent);
+      // this.connector.send(this.lastSent);
       this.connector.socket.emit(Event.RELOAD_DOCUMENT, {
         historyId: this.parentHistoryId,
         documentId: this.connector.documentId,
