@@ -169,10 +169,10 @@ class Document {
       default:
         throw new Error(`Unknown state: ${this.state}`);
     }
-    if (this.disconnect) {
+    if (this.disconnect && this.state === Document.SYNCHRONIZED) {
       // Sleep.sleep(1.5);
-      // location.reload();
-      // this.disconnect = false;
+      this.disconnect = false;
+      location.reload();
     }
 
     this.localDB.store(this.state, this.parentHistoryId, this.lastSent, this.buffer);
