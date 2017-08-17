@@ -6,6 +6,7 @@ const OperationSequence = require('../helper/operation-sequence');
 const OperationHandler = require('../operation/operation-handler');
 const OperationManager = require('../operation/operation-manager');
 const StackTrace = require('stacktrace-js');
+const uuidv4 = require('uuid/v4');
 
 class OTEngine {
   constructor(document) {
@@ -77,7 +78,8 @@ class OTEngine {
   }
 
   newObject(type) {
-    const objectId = `${this.document.operationId}-${this.lastObjectId++}`;
+    // const objectId = `${this.document.operationId}-${this.lastObjectId++}`;
+    const objectId = uuidv4();
     return this.getObject(objectId, type);
   }
 
