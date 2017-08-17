@@ -14,7 +14,7 @@ class CentralServer {
               data => this.onDocumentLoad(socket, data.documentId)
           );
       socket.on(Event.RELOAD_DOCUMENT,
-              data => this.onReloadDocument(socket, data.historyId, data.documentId, data.operationId)
+              data => this.onReloadDocument(socket, data.historyId, data.documentId, data.token)
           );
       socket.on(Event.CHANGE_DOCUMENT,
               data => this.onDocumentChange(data)
@@ -78,10 +78,10 @@ class CentralServer {
             });
   }
 
-  onReloadDocument(socket, historyId, documentId, operationId) {
+  onReloadDocument(socket, historyId, documentId, token) {
     socket.join(documentId);
     const documentManager = this.getDocumentManager(documentId);
-    documentManager.reloadDocument(historyId, operationId)
+    documentManager.reloadDocument(historyId, token)
             .then((ops) => {
                 // Sleep.sleep(Math.floor(Math.random() * 4));
               ops.forEach((op) => {
