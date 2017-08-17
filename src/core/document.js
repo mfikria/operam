@@ -3,6 +3,7 @@ const OperationManager = require('../operation/operation-manager');
 const Event = require('../helper/events');
 const StackTrace = require('stacktrace-js');
 const LocalDB = require('./local-db');
+const uuidv4 = require('uuid/v4');
 // const Sleep = require('sleep');
 
 class Document {
@@ -11,8 +12,6 @@ class Document {
     this.connector = connector;
     this.userId = userId;
     this.localDB = new LocalDB(userId, this.connector.documentId);
-
-    this.lastId = 0;
 
     this.state = Document.SYNCHRONIZED;
     this.events = new EventEmitter();
@@ -219,7 +218,7 @@ class Document {
 
         tagged = {
           historyId: this.parentHistoryId,
-          operationId: `${this.operationId}-${this.lastId++}`,
+          operationId: uuidv4(),
           operation: op
         };
 
@@ -232,7 +231,7 @@ class Document {
 
         tagged = {
           historyId: this.parentHistoryId,
-          operationId: `${this.operationId}-${this.lastId++}`,
+          operationId: uuidv4(),
           operation: op
         };
 
