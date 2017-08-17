@@ -108,24 +108,24 @@ class CentralServer {
 
   onReloadDocument(socket, historyId, documentId, operationId) {
     socket.join(documentId);
-    // const documentManager = this.getDocumentManager(documentId);
-    // documentManager.reloadDocument(historyId, operationId)
-    //         .then((ops) => {
-    //             // Sleep.sleep(Math.floor(Math.random() * 4));
-    //           ops.forEach((op) => {
-    //             socket.emit(
-    //                     Event.CHANGE_DOCUMENT,
-    //                     CentralServer.generateData(documentId, op)
-    //                 );
-    //           });
-    //           // socket.emit(
-    //           //       Event.CHANGE_DOCUMENT,
-    //           //       CentralServer.generateData(documentId, ops)
-    //           //   );
-    //         })
-    //         .catch((e) => {
-    //           throw new Error(`Error during document change: ${e.toString()}`);
-    //         });
+    const documentManager = this.getDocumentManager(documentId);
+    documentManager.reloadDocument(historyId, operationId)
+            .then((ops) => {
+                // Sleep.sleep(Math.floor(Math.random() * 4));
+              ops.forEach((op) => {
+                socket.emit(
+                        Event.CHANGE_DOCUMENT,
+                        CentralServer.generateData(documentId, op)
+                    );
+              });
+              // socket.emit(
+              //       Event.CHANGE_DOCUMENT,
+              //       CentralServer.generateData(documentId, ops)
+              //   );
+            })
+            .catch((e) => {
+              throw new Error(`Error during document change: ${e.toString()}`);
+            });
   }
 }
 
