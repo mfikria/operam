@@ -30,7 +30,9 @@ class Document {
     });
 
     this.connector.socket.on(Event.RECONNECT, () => {
-      console.log("test");
+
+      console.log("reconnect");
+      console.dir(this.connector.socket.sendBuffer);
       console.log(this.parentHistoryId);
       console.dir(this.lastSent);
       console.dir(this.buffer);

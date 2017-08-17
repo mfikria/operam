@@ -65,8 +65,7 @@ class SocketConnector extends OTConnector {
                 OperationManager.deserializeObject(data.operation),
             );
       console.log('receive:');
-      console.log(`History id ${data.historyId}`);
-      console.dir(data.operation.operations);
+      console.dir(data);
       if (data.documentId === this.documentId) {
         this.events.emit(Event.CHANGE, operationBundle);
       }
