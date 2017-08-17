@@ -79,9 +79,7 @@ class Document {
         break;
 
       case Document.WAITING_ACK:
-        if ((this.lastSent.operationId === bundle.operationId || this.lastSent.operation.operations[0].operationId === bundle.operationId)
-            && this.userId === bundle.userId
-            ) {
+        if (this.lastSent.operationId === bundle.operationId || this.lastSent.operation.operations[0].token === bundle.operation.operations[0].token) {
           this.parentHistoryId = bundle.historyId;
           this.state = Document.SYNCHRONIZED;
         } else {
@@ -104,9 +102,7 @@ class Document {
         break;
 
       case Document.WAITING_ACK_WITH_BUFFER:
-        if ((this.lastSent.operationId === bundle.operationId || this.lastSent.operation.operations[0].operationId === bundle.operationId)
-            && this.userId === bundle.userId
-            ) {
+        if (this.lastSent.operationId === bundle.operationId || this.lastSent.operation.operations[0].token === bundle.operation.operations[0].token) {
           this.parentHistoryId = bundle.historyId;
           this.state = Document.WAITING_ACK;
 
@@ -154,16 +150,16 @@ class Document {
   }
 
   apply(op) {
-      const callback = function (stackframes) {
-          const stringifiedStack = stackframes.map(sf => sf.toString()).join('\n');
-          console.log(stringifiedStack);
-      };
-
-      const errback = function (err) {
-          console.log(err.message);
-      };
-
-      StackTrace.get().then(callback).catch(errback);
+      // const callback = function (stackframes) {
+      //     const stringifiedStack = stackframes.map(sf => sf.toString()).join('\n');
+      //     console.log(stringifiedStack);
+      // };
+      //
+      // const errback = function (err) {
+      //     console.log(err.message);
+      // };
+      //
+      // StackTrace.get().then(callback).catch(errback);
     if (this.composeDepth > 0) {
       if (this.composing) {
         this.composing = this.operationManager.compose(this.composing, op);
