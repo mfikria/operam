@@ -69,7 +69,7 @@ class Document {
               // this.localDB.sync();
               this.parentHistoryId = initial.historyId;
               this.current = initial.operation;
-              this.operationId = initial.operationId;
+              this.operationId = uuidv4();
 
               this.connector.on(Event.CHANGE, this.receive.bind(this));
 
