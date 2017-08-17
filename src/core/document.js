@@ -2,6 +2,7 @@ const EventEmitter = require('events');
 const OperationManager = require('../operation/operation-manager');
 const OperationBundle = require('../helper/operation-bundle');
 const Event = require('../helper/events');
+const StackTrace = require('stacktrace-js');
 const UUIDv4 = require('uuid/v4');
 
 class Document {
@@ -153,6 +154,16 @@ class Document {
   }
 
   apply(op) {
+      const callback = function (stackframes) {
+          const stringifiedStack = stackframes.map(sf => sf.toString()).join('\n');
+          console.log(stringifiedStack);
+      };
+
+      const errback = function (err) {
+          console.log(err.message);
+      };
+
+      StackTrace.get().then(callback).catch(errback);
     if (this.composeDepth > 0) {
       if (this.composing) {
         this.composing = this.operationManager.compose(this.composing, op);

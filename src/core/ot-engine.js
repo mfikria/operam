@@ -78,8 +78,8 @@ class OTEngine {
   }
 
   newObject(type) {
-    const objectId = `${this.document.operationId}-${this.lastObjectId++}`;
-    // const objectId = uuidv4();
+    // const objectId = `${this.document.operationId}-${this.lastObjectId++}`;
+    const objectId = uuidv4();
     return this.getObject(objectId, type);
   }
 
@@ -173,7 +173,7 @@ class OTEngine {
       },
 
       send(op) {
-        self.apply(uuidv4(), this.objectType, op);
+        self.apply(this.objectId, this.objectType, op);
       },
 
       apply(op, local) {
