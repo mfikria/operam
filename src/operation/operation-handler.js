@@ -10,12 +10,12 @@ class OperationHandler {
     this.operations = [];
   }
 
-  setOperation(operationId, dataType, op) {
+  setOperation(operationId, dataType, op, token) {
     if (this.operations[operationId]) {
       throw new Error(`Operation has been set. operationId: \`${operationId}\``);
     }
 
-    this.operations[operationId] = new OperationWrapper(operationId, dataType, op);
+    this.operations[operationId] = new OperationWrapper(operationId, dataType, op, token);
     return this;
   }
 

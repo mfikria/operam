@@ -45,7 +45,7 @@ class OperationManager {
 
             const dataType = OperationManager.DATA_TYPES[op1.dataType];
             const composed = dataType.compose(op1.operation, op2.operation);
-            iteratorLeft.replace(new OperationWrapper(op1.operationId, op1.dataType, composed));
+            iteratorLeft.replace(new OperationWrapper(op1.operationId, op1.dataType, composed, op1.token));
           }
 
           handled = true;
@@ -95,8 +95,8 @@ class OperationManager {
 
             const dataType = OperationManager.DATA_TYPES[op1.dataType];
             const transformed = dataType.transform(op1.operation, op2.operation);
-            deltaLeft.push(new OperationWrapper(op1.operationId, op1.dataType, transformed.left));
-            deltaRight.push(new OperationWrapper(op2.operationId, op2.dataType, transformed.right));
+            deltaLeft.push(new OperationWrapper(op1.operationId, op1.dataType, transformed.left, op1.token));
+            deltaRight.push(new OperationWrapper(op2.operationId, op2.dataType, transformed.right, op2.token));
           }
 
           handled = true;
@@ -132,7 +132,8 @@ class OperationManager {
         'operation',
         subOp.operationId,
         subOp.dataType,
-        OperationManager.DATA_TYPES[subOp.dataType].serializeObject(subOp.operation)
+        OperationManager.DATA_TYPES[subOp.dataType].serializeObject(subOp.operation),
+        subOp.token
       ]);
     });
 
@@ -149,7 +150,8 @@ class OperationManager {
       operationHandler.setOperation(
           data[1],
           data[2],
-          OperationManager.DATA_TYPES[data[2]].deserializeObject(data[3])
+          OperationManager.DATA_TYPES[data[2]].deserializeObject(data[3]),
+          data[4]
       );
     });
 

@@ -118,7 +118,7 @@ class OTEngine {
       editor.queueEvent(Event.CHANGE, op);
     }
     this.document.apply(new OperationHandler()
-            .setOperation(uuidv4(), type, op)
+            .setOperation(id, type, op, uuidv4())
             .done(),
         );
   }

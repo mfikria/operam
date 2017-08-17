@@ -1,8 +1,9 @@
 class OperationWrapper {
-  constructor(id, type, op) {
+  constructor(id, type, op, token) {
     this.operationId = id;
     this.dataType = type;
     this.operation = op;
+    this.token = token;
   }
 
   apply(handler) {
@@ -10,7 +11,7 @@ class OperationWrapper {
   }
 
   invert() {
-    return new OperationWrapper(this.operationId, this.dataType, this.operation.invert());
+    return new OperationWrapper(this.operationId, this.dataType, this.operation.invert(), this.token);
   }
 
   serializeObject() {
