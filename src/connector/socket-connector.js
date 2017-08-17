@@ -74,6 +74,7 @@ class SocketConnector extends OTConnector {
 
   onDocumentLoad(resolve) {
     this.socket.on(Event.LOAD_DOCUMENT, (data) => {
+      console.dir(this.socket);
       const operationBundle = new OperationBundle(
                 data.historyId,
                 data.operationId,
