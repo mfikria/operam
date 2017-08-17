@@ -1,5 +1,6 @@
 class OperationBundle {
-  constructor(historyId, operationId, operation) {
+  constructor(userId, historyId, operationId, operation) {
+    this.userId = userId;
     this.historyId = historyId;
     this.operationId = operationId;
     this.operation = operation;

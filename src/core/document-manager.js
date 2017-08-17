@@ -1,5 +1,4 @@
-const uuidv4 = require('uuid/v4');
-
+const UUIDv4 = require('uuid/v4');
 const locallock = require('../helper/local-lock');
 const OperationBundle = require('../helper/operation-bundle');
 const OperationManager = require('../operation/operation-manager');
@@ -16,7 +15,7 @@ class DocumentManager {
     return this.historyBuffer.latest()
         .then(historyId => this.historyBuffer.until(historyId + 1)
                 .then((items) => {
-                  const operationId = uuidv4();
+                  const operationId = UUIDv4();
 
                   const composer = this.operationManager.newOperationComposer();
                   items.forEach((item) => {
@@ -24,7 +23,7 @@ class DocumentManager {
                   });
 
                   const composedOperation = composer.done();
-                  return new OperationBundle(historyId, operationId, composedOperation);
+                  return new OperationBundle(0, historyId, operationId, composedOperation);
                 })
         );
   }
@@ -32,7 +31,7 @@ class DocumentManager {
   until(historyId) {
     return this.historyBuffer.until(historyId + 1)
               .then((items) => {
-                const operationId = uuidv4();
+                const operationId = UUIDv4();
 
                 const composer = this.operationManager.newOperationComposer();
                 items.forEach((item) => {
@@ -40,7 +39,7 @@ class DocumentManager {
                 });
 
                 const composedOperation = composer.done();
-                return new OperationBundle(historyId, operationId, composedOperation);
+                return new OperationBundle(0, historyId, operationId, composedOperation);
               });
   }
 
@@ -64,7 +63,7 @@ class DocumentManager {
                   return this.historyBuffer.store(toStore);
                 })
                 .then((id) => {
-                  done(null, new OperationBundle(id, operationId, toStore));
+                  done(null, new OperationBundle(0, id, operationId, toStore));
                 })
                 .catch(err => done(err));
     });
@@ -82,7 +81,7 @@ class DocumentManager {
     //           if (op.operationId == operationId) {
     //             const composed = composer.done();
     //             if (composed) {
-    //               arr.push(new OperationBundle(i, uuidv4(), composed));
+    //               arr.push(new OperationBundle(i, UUIDv4(), composed));
     //             }
     //             arr.push(new OperationBundle(i + 1, operationId, op));
     //             composer = this.operationManager.newOperationComposer();
@@ -105,9 +104,9 @@ class DocumentManager {
                   if (op.operations[0].operationId === operationId) {
                     const composed = composer.done();
                     if (composed) {
-                      arr.push(new OperationBundle(i, uuidv4(), composed));
+                      arr.push(new OperationBundle(0, i, UUIDv4(), composed));
                     }
-                    arr.push(new OperationBundle(i + 1, operationId, op));
+                    arr.push(new OperationBundle(0, i + 1, operationId, op));
                     composer = this.operationManager.newOperationComposer();
                   } else {
                     composer.add(op);
@@ -116,7 +115,7 @@ class DocumentManager {
                 });
                 const composed = composer.done();
                 if (composed) {
-                  arr.push(new OperationBundle(i, uuidv4(), composed));
+                  arr.push(new OperationBundle(0, i, UUIDv4(), composed));
                 }
                 return Promise.resolve(arr);
               });

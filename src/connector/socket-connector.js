@@ -2,14 +2,11 @@ const OTConnector = require('./ot-connector');
 const OperationBundle = require('../helper/operation-bundle');
 const OperationManager = require('../operation/operation-manager');
 const Event = require('../helper/events');
-const StackTrace = require('stacktrace-js');
 
 class SocketConnector extends OTConnector {
   constructor(socket, documentId) {
     super(documentId);
     this.socket = socket;
-    this.t0 = window.performance.now();
-    this.t1 = 0;
   }
 
   handleEvents() {
@@ -20,34 +17,25 @@ class SocketConnector extends OTConnector {
     });
   }
 
-  connect(historyId) {
+  connect() {
     this.socket.emit(Event.LOAD_DOCUMENT, {
-      documentId: this.documentId,
-      historyId
+      documentId: this.documentId
     });
 
     return this.handleEvents();
   }
 
-  send(op) {
+  send(bundle) {
     console.log('send:');
-    console.log(`HistoryId: ${op.historyId}`);
-    console.dir(op);
-    // const callback = function (stackframes) {
-    //   const stringifiedStack = stackframes.map(sf => sf.toString()).join('\n');
-    //   console.log(stringifiedStack);
-    // };
-    //
-    // const errback = function (err) {
-    //   console.log(err.message);
-    // };
-    //
-    // StackTrace.get().then(callback).catch(errback);
+    console.log(`HistoryId: ${bundle.historyId}`);
+    console.dir(bundle);
+
     this.socket.emit(Event.CHANGE_DOCUMENT, {
       documentId: this.documentId,
-      historyId: op.historyId,
-      operationId: op.operationId,
-      operation: OperationManager.serializeObject(op.operation)
+      userId: bundle.userId,
+      historyId: bundle.historyId,
+      operationId: bundle.operationId,
+      operation: OperationManager.serializeObject(bundle.operation)
     });
   }
 
@@ -59,30 +47,32 @@ class SocketConnector extends OTConnector {
 
   onDocumentChange() {
     this.socket.on(Event.CHANGE_DOCUMENT, (data) => {
-      const operationBundle = new OperationBundle(
-                data.historyId,
-                data.operationId,
-                OperationManager.deserializeObject(data.operation),
-            );
+      const bundle = new OperationBundle(
+          data.userId,
+          data.historyId,
+          data.operationId,
+          OperationManager.deserializeObject(data.operation),
+      );
       console.log('receive:');
       console.dir(data);
+
       if (data.documentId === this.documentId) {
-        this.events.emit(Event.CHANGE, operationBundle);
+        this.events.emit(Event.CHANGE, bundle);
       }
     });
   }
 
   onDocumentLoad(resolve) {
     this.socket.on(Event.LOAD_DOCUMENT, (data) => {
-      console.dir(this.socket);
-      const operationBundle = new OperationBundle(
-                data.historyId,
-                data.operationId,
-                OperationManager.deserializeObject(data.operation),
-            );
+      const bundle = new OperationBundle(
+        data.userId,
+        data.historyId,
+        data.operationId,
+        OperationManager.deserializeObject(data.operation),
+      );
 
       if (data.documentId === this.documentId) {
-        resolve(operationBundle);
+        resolve(bundle);
       }
     });
   }
