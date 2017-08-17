@@ -173,8 +173,8 @@ class Document {
     }
     if (this.disconnect && this.state === Document.SYNCHRONIZED) {
       // Sleep.sleep(1.5);
-      this.disconnect = false;
-      location.reload();
+      // this.disconnect = false;
+      // location.reload();
     }
 
     this.localDB.store(this.state, this.parentHistoryId, this.lastSent, this.buffer);
