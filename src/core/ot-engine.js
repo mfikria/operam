@@ -173,7 +173,7 @@ class OTEngine {
       },
 
       send(op) {
-        self.apply(this.objectId, this.objectType, op);
+        self.apply(uuidv4(), this.objectType, op);
       },
 
       apply(op, local) {
