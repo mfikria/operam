@@ -29,7 +29,8 @@ class Document {
 
       this.connector.socket.emit(Event.RELOAD_DOCUMENT, {
         historyId: this.parentHistoryId,
-        documentId: this.connector.documentId
+        documentId: this.connector.documentId,
+        token: this.lastSent.operation.operations[0].token
       });
     });
   }

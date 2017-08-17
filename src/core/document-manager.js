@@ -69,7 +69,7 @@ class DocumentManager {
     });
   }
 
-  reloadDocument(historyId, operationId) {
+  reloadDocument(historyId, token) {
     // return this.historyBuffer.from(historyId + 1)
     //       .then((ops) => {
     //         let composer = this.operationManager.newOperationComposer();
@@ -100,13 +100,12 @@ class DocumentManager {
                 const arr = [];
                 let i = historyId;
                 ops.forEach((op) => {
-                  console.dir(op.operationId);
-                  if (op.operations[0].operationId === operationId) {
+                  if (op.operations[0].token === token) {
                     const composed = composer.done();
                     if (composed) {
                       arr.push(new OperationBundle(0, i, UUIDv4(), composed));
                     }
-                    arr.push(new OperationBundle(0, i + 1, operationId, op));
+                    arr.push(new OperationBundle(0, i + 1, token, op));
                     composer = this.operationManager.newOperationComposer();
                   } else {
                     composer.add(op);
